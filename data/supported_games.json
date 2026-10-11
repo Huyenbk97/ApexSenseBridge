@@ -1,7 +1,7 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-10T10:26:56.878340+00:00",
-  "totalGames": 218,
+  "updatedAt": "2026-10-11T10:38:29.740487+00:00",
+  "totalGames": 220,
   "discordExecutableGames": 132,
   "games": [
     {
@@ -602,6 +602,17 @@
         "deadzonesteam.exe"
       ],
       "addedAt": "2026-10-10"
+    },
+    {
+      "title": "Deadzone: Rogue 2",
+      "normalized": "deadzonerogue2",
+      "adaptiveTriggers": false,
+      "hapticFeedback": true,
+      "profile": "standard",
+      "steamAppId": 4465790,
+      "steamAppIdVerified": true,
+      "iconUrl": "https://shared.akamai.steamstatic.com/store_item_assets/steam/apps/4465790/5966d4466961f6ea7652886a31b2b7af7fc3012b/library_capsule_2x.jpg?t=1791485085",
+      "addedAt": "2026-10-11"
     },
     {
       "title": "Death Stranding",
@@ -1871,6 +1882,17 @@
       "steamAppIdVerified": false,
       "iconUrl": "",
       "addedAt": "2026-09-01"
+    },
+    {
+      "title": "P.T. for PC",
+      "normalized": "ptforpc",
+      "adaptiveTriggers": false,
+      "hapticFeedback": true,
+      "profile": "standard",
+      "steamAppId": 0,
+      "steamAppIdVerified": false,
+      "iconUrl": "",
+      "addedAt": "2026-10-11"
     },
     {
       "title": "Pacific Drive",

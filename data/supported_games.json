@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "updatedAt": "2026-10-11T10:38:29.740487+00:00",
+  "updatedAt": "2026-10-12T11:42:22.874632+00:00",
   "totalGames": 220,
   "discordExecutableGames": 132,
   "games": [
@@ -606,7 +606,7 @@
     {
       "title": "Deadzone: Rogue 2",
       "normalized": "deadzonerogue2",
-      "adaptiveTriggers": false,
+      "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
       "steamAppId": 4465790,

@@ -1,5 +1,18 @@
 # Changelog
 
+## 1.1.0
+
+### UI & UX Enhancements
+- **8-Column Grid View**: Added a switchable 8-column poster grid layout for certified games with high-density visual browsing.
+- **Recently Played Shelf**: Dedicated top shelf showcasing recently launched games with instant resume and play statistics.
+- **Persistent Theme Selection**: Console themes (PlayStation, Xbox, Nintendo Switch, Steam Deck, Custom Accent) now persist reliably across restarts without reverting to default.
+- **Automatic Window Display on Startup**: Launching `ApexSenseBridgeTray.exe` directly now opens the dashboard window immediately without requiring a click on the notification area tray icon. Background startup (`--minimized`) remains preserved for Windows autorun.
+
+### Game Library & Artwork
+- **Complete Game Cover Coverage**: Updated Sony PlayStation Store official portrait artwork and Cloudflare Steam CDN covers for 220/220 supported titles.
+- **Cover Cache Reliability**: Upgraded `CoverCacheService` to load disk image bitmaps directly via in-memory byte streams, preventing file lockouts and delayed creation errors.
+- **Non-disruptive Selection**: Fixed auto-scroll jumping when clicking game cards in both List and Grid views.
+
 ## 1.0.1
 
 ### Adaptive triggers on APEX 4/5 ([#35](https://github.com/ReynArts/ApexSenseBridge/issues/35), [#38](https://github.com/ReynArts/ApexSenseBridge/issues/38), [#22](https://github.com/ReynArts/ApexSenseBridge/issues/22), [#23](https://github.com/ReynArts/ApexSenseBridge/issues/23))

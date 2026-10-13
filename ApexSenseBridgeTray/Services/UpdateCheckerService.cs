@@ -44,7 +44,7 @@ namespace ApexSenseBridgeTray.Services
             catch
             {
             }
-            return "1.0.1";
+            return "1.1.0";
         }
 
         public async Task<UpdateInfo> CheckForUpdatesAsync(bool silent)
@@ -179,60 +179,97 @@ namespace ApexSenseBridgeTray.Services
             return info;
         }
 
-        public void DownloadOrOpenRelease(UpdateInfo info)
+        public async Task<bool> DownloadAndInstallAsync(UpdateInfo info, IProgress<int> progress = null)
         {
-            if (info != null && !string.IsNullOrEmpty(info.InstallerUrl))
+            if (info == null || string.IsNullOrEmpty(info.InstallerUrl))
             {
-                try
-                {
-                    string tempPath = Path.Combine(
-                        Path.GetTempPath(),
-                        "ApexSenseBridge-Setup-" + Guid.NewGuid().ToString("N") + ".exe");
-                    using (WebClient wc = new WebClient())
-                    {
-                        wc.DownloadFile(info.InstallerUrl, tempPath);
-                    }
-
-                    string verificationError;
-                    if (ReleaseSecurity.VerifyInstaller(
-                        tempPath,
-                        info.LatestVersion,
-                        Assembly.GetExecutingAssembly().Location,
-                        out verificationError))
-                    {
-                        ProcessStartInfo psi = new ProcessStartInfo(tempPath);
-                        psi.UseShellExecute = true;
-                        Process.Start(psi);
-                        return;
-                    }
-                    try { File.Delete(tempPath); } catch { }
-                    MessageBox.Show(
-                        "The downloaded installer was not launched because its identity could not be verified.\n\n" +
-                        verificationError,
-                        LocalizationManager.Get("Loc_UpdateDialogTitle"),
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Error);
-                }
-                catch (Exception ex)
-                {
-                    MessageBox.Show(
-                        LocalizationManager.Get("Loc_UpdateError") + ex.Message,
-                        LocalizationManager.Get("Loc_UpdateDialogTitle"),
-                        MessageBoxButton.OK,
-                        MessageBoxImage.Warning);
-                }
+                OpenReleaseUrl(info);
+                return false;
             }
 
+            string tempPath = null;
+            try
+            {
+                tempPath = Path.Combine(
+                    Path.GetTempPath(),
+                    "ApexSenseBridge-Setup-" + Guid.NewGuid().ToString("N") + ".exe");
+
+                using (var httpClient = new HttpClient())
+                {
+                    httpClient.Timeout = TimeSpan.FromMinutes(5);
+                    httpClient.DefaultRequestHeaders.Add("User-Agent", "ApexSenseBridgeTray/1.0");
+
+                    using (var response = await httpClient.GetAsync(info.InstallerUrl, HttpCompletionOption.ResponseHeadersRead).ConfigureAwait(false))
+                    {
+                        response.EnsureSuccessStatusCode();
+                        long? totalBytes = response.Content.Headers.ContentLength;
+
+                        using (var contentStream = await response.Content.ReadAsStreamAsync().ConfigureAwait(false))
+                        using (var fileStream = new FileStream(tempPath, FileMode.Create, FileAccess.Write, FileShare.None, 8192, true))
+                        {
+                            var buffer = new byte[8192];
+                            long totalRead = 0;
+                            int bytesRead;
+
+                            while ((bytesRead = await contentStream.ReadAsync(buffer, 0, buffer.Length).ConfigureAwait(false)) > 0)
+                            {
+                                await fileStream.WriteAsync(buffer, 0, bytesRead).ConfigureAwait(false);
+                                totalRead += bytesRead;
+
+                                if (totalBytes.HasValue && totalBytes.Value > 0 && progress != null)
+                                {
+                                    int percent = (int)((totalRead * 100) / totalBytes.Value);
+                                    progress.Report(Math.Min(100, percent));
+                                }
+                            }
+                        }
+                    }
+                }
+
+                if (progress != null) progress.Report(100);
+
+                string verificationError;
+                if (ReleaseSecurity.VerifyInstaller(
+                    tempPath,
+                    info.LatestVersion,
+                    Assembly.GetExecutingAssembly().Location,
+                    out verificationError))
+                {
+                    ProcessStartInfo psi = new ProcessStartInfo(tempPath) { UseShellExecute = true };
+                    Process.Start(psi);
+                    return true;
+                }
+
+                try { File.Delete(tempPath); } catch { }
+                MessageBox.Show(
+                    "The downloaded installer was not launched because its identity could not be verified.\n\n" + verificationError,
+                    LocalizationManager.Get("Loc_UpdateDialogTitle"),
+                    MessageBoxButton.OK,
+                    MessageBoxImage.Error);
+                return false;
+            }
+            catch (Exception)
+            {
+                try { if (tempPath != null && File.Exists(tempPath)) File.Delete(tempPath); } catch { }
+                OpenReleaseUrl(info);
+                return false;
+            }
+        }
+
+        public void OpenReleaseUrl(UpdateInfo info)
+        {
             string targetUrl = (info != null && !string.IsNullOrEmpty(info.ReleaseUrl)) ? info.ReleaseUrl : GitHubReleasesPage;
             try
             {
-                ProcessStartInfo psi = new ProcessStartInfo(targetUrl);
-                psi.UseShellExecute = true;
+                ProcessStartInfo psi = new ProcessStartInfo(targetUrl) { UseShellExecute = true };
                 Process.Start(psi);
             }
-            catch
-            {
-            }
+            catch { }
+        }
+
+        public void DownloadOrOpenRelease(UpdateInfo info)
+        {
+            Task.Run(async () => await DownloadAndInstallAsync(info, null));
         }
 
         private bool IsNewerVersion(string latestStr, string currentStr)

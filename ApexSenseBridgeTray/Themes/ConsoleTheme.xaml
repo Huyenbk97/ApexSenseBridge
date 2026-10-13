@@ -54,6 +54,17 @@
         <GradientStop Color="#081128" Offset="0.45"/>
         <GradientStop Color="#04060E" Offset="1"/>
     </LinearGradientBrush>
+
+    <!-- Ambient light halos: soft glow defaults (PlayStation midnight blue) -->
+    <RadialGradientBrush x:Key="AmbientLightTopBrush" Center="0.88,0" GradientOrigin="0.88,0" RadiusX="0.45" RadiusY="0.7">
+        <GradientStop Color="#552A6BFF" Offset="0"/>
+        <GradientStop Color="#002A6BFF" Offset="1"/>
+    </RadialGradientBrush>
+    <RadialGradientBrush x:Key="AmbientLightBottomBrush" Center="0,1" GradientOrigin="0,1" RadiusX="0.4" RadiusY="0.55">
+        <GradientStop Color="#33163C9E" Offset="0"/>
+        <GradientStop Color="#00163C9E" Offset="1"/>
+    </RadialGradientBrush>
+
     <!-- Deep raspberry → ember: white bold text keeps a readable contrast on both ends. -->
     <LinearGradientBrush x:Key="SupportGradient" StartPoint="0,0" EndPoint="1,0">
         <GradientStop Color="#D61F5B" Offset="0"/>
@@ -69,8 +80,8 @@
     <Style x:Key="ConsoleWindowFrame" TargetType="Border">
         <Setter Property="Margin" Value="40"/>
         <Setter Property="CornerRadius" Value="22"/>
-        <Setter Property="Background" Value="{StaticResource ConsoleBackdrop}"/>
-        <Setter Property="BorderBrush" Value="#29FFFFFF"/>
+        <Setter Property="Background" Value="{DynamicResource ConsoleBackdrop}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
         <Setter Property="Effect">
             <Setter.Value>
@@ -81,8 +92,8 @@
 
     <!-- Opaque frame for non-layered windows: no outer margin or shadow, DWM rounds the corners. -->
     <Style x:Key="ConsoleWindowFrameFlat" TargetType="Border">
-        <Setter Property="Background" Value="{StaticResource ConsoleBackdrop}"/>
-        <Setter Property="BorderBrush" Value="#29FFFFFF"/>
+        <Setter Property="Background" Value="{DynamicResource ConsoleBackdrop}"/>
+        <Setter Property="BorderBrush" Value="{DynamicResource CardBorder}"/>
         <Setter Property="BorderThickness" Value="1"/>
     </Style>
 
@@ -493,6 +504,38 @@
         </Setter>
     </Style>
 
+    <Style x:Key="LangOptionButton" TargetType="RadioButton">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Foreground" Value="{DynamicResource TextSecondary}"/>
+        <Setter Property="FontSize" Value="11.5"/>
+        <Setter Property="FontWeight" Value="SemiBold"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="RadioButton">
+                    <Border x:Name="TabBorder" CornerRadius="8" Padding="12,6" Margin="0,0,6,0"
+                            Background="{DynamicResource ControlBackground}"
+                            BorderBrush="{DynamicResource ControlBorder}" BorderThickness="1.5">
+                        <TextBlock x:Name="TabTxt" Text="{TemplateBinding Content}"
+                                   Foreground="{TemplateBinding Foreground}"
+                                   FontSize="{TemplateBinding FontSize}"
+                                   FontWeight="{TemplateBinding FontWeight}"
+                                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsChecked" Value="True">
+                            <Setter TargetName="TabBorder" Property="Background" Value="{DynamicResource PlayStationBlue}"/>
+                            <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource PlayStationBlue}"/>
+                            <Setter TargetName="TabTxt" Property="Foreground" Value="White"/>
+                        </Trigger>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="TabBorder" Property="BorderBrush" Value="{DynamicResource PlayStationBlue}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- ═══ Buttons (pills: MinHeight 36, radius 18; BorderBrush bound for the gamepad ring) ═══ -->
     <Style x:Key="BtnPrimary" TargetType="Button">
         <Setter Property="Background" Value="{DynamicResource PlayStationBlue}"/>
@@ -553,6 +596,27 @@
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Opacity" Value="0.4"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="ColorCircleButton" TargetType="Button">
+        <Setter Property="Cursor" Value="Hand"/>
+        <Setter Property="Width" Value="24"/>
+        <Setter Property="Height" Value="24"/>
+        <Setter Property="Margin" Value="0,0,8,6"/>
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Button">
+                    <Border x:Name="circle" Background="{TemplateBinding Background}"
+                            CornerRadius="12" BorderThickness="2" BorderBrush="#40FFFFFF"/>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="circle" Property="BorderBrush" Value="White"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>

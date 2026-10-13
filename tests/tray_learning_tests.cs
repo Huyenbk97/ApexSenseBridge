@@ -677,10 +677,24 @@ internal static class TrayLearningTests
         var serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
         var restored = serializer.Deserialize<TraySettings>(serializer.Serialize(settings));
         Assert(restored.GetGameExecutable("ALPHA") == @"D:\Games\Alpha\game.EXE", "Executable did not survive serialization.");
+
+        settings.SelectedTheme = "cyberpunk";
+        settings.CustomAccentColor = "#EC4899";
+        settings.BackgroundImagePath = @"C:\Wallpapers\gaming.jpg";
+        settings.GameListViewMode = "grid";
+        var restoredCustom = serializer.Deserialize<TraySettings>(serializer.Serialize(settings));
+        Assert(restoredCustom.SelectedTheme == "cyberpunk" &&
+               restoredCustom.CustomAccentColor == "#EC4899" &&
+               restoredCustom.BackgroundImagePath == @"C:\Wallpapers\gaming.jpg" &&
+               restoredCustom.GameListViewMode == "grid",
+            "Custom accent, wallpaper, and view mode did not survive serialization.");
+
         var legacy = serializer.Deserialize<TraySettings>("{\"AutoDetectGames\":true}");
         Assert(legacy.TriggerStrengthPercent == 100 && legacy.VibrationStrengthPercent == 100 &&
-               legacy.Apex4GyroStrengthPercent == 100 && legacy.Apex4GyroYawStrengthPercent == 100,
-            "Legacy settings lost default strengths.");
+               legacy.Apex4GyroStrengthPercent == 100 && legacy.Apex4GyroYawStrengthPercent == 100 &&
+               legacy.SelectedTheme == "playstation" && legacy.CustomAccentColor == null && legacy.BackgroundImagePath == null &&
+               legacy.GameListViewMode == "list",
+            "Legacy settings lost default strengths, theme settings, or view mode.");
         Assert(BridgeArguments.Build("none", true, 20, false, 0, 35, 60, 175, 225).Contains(
             "--trigger-strength 35 --vibration-strength 60 --apex4-gyro-strength 175 --apex4-gyro-yaw-strength 225"),
             "Strength values did not reach engine arguments.");

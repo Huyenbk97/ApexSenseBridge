@@ -18,6 +18,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Effects;
 using System.Windows.Media.Imaging;
+using System.Windows.Media.Animation;
 using System.Windows.Shapes;
 
 namespace ApexSenseBridgeTray
@@ -31,12 +32,17 @@ namespace ApexSenseBridgeTray
         private readonly ProcessMonitorService monitorService;
         private readonly UpdateCheckerService updateChecker;
         private readonly ControllerDetectionService controllerDetection;
+        private readonly GameProfileService profileService;
+        private readonly SessionHistoryService historyService;
 
         private readonly List<GameItemViewModel> allGameViewModels = new List<GameItemViewModel>();
         private readonly ObservableCollection<GameItemViewModel> filteredGames = new ObservableCollection<GameItemViewModel>();
         private readonly List<LearnedItemViewModel> allLearnedViewModels = new List<LearnedItemViewModel>();
         private readonly ObservableCollection<LearnedItemViewModel> filteredLearned = new ObservableCollection<LearnedItemViewModel>();
         private readonly ObservableCollection<GameItemViewModel> dashboardFeaturedGames = new ObservableCollection<GameItemViewModel>();
+        private readonly ObservableCollection<SessionHistoryViewModel> historyViewModels = new ObservableCollection<SessionHistoryViewModel>();
+        private readonly ObservableCollection<GameItemViewModel> recentlyPlayedGames = new ObservableCollection<GameItemViewModel>();
+        private GameItemViewModel selectedOverrideGame;
 
         private readonly GamepadNavigationService gamepadNav;
         private int currentTabIndex = 0;
@@ -60,7 +66,9 @@ namespace ApexSenseBridgeTray
             EngineSessionManager sessionManager = null,
             ProcessMonitorService monitorService = null,
             UpdateCheckerService updateChecker = null,
-            string initialTab = "dashboard")
+            string initialTab = "dashboard",
+            GameProfileService profileService = null,
+            SessionHistoryService historyService = null)
         {
             this.gameListService = gameListService;
             this.settings = settings;
@@ -68,14 +76,36 @@ namespace ApexSenseBridgeTray
             this.sessionManager = sessionManager;
             this.monitorService = monitorService;
             this.updateChecker = updateChecker;
+            this.profileService = profileService ?? (sessionManager != null ? sessionManager.ProfileService : null) ?? new GameProfileService();
+            this.historyService = historyService ?? (sessionManager != null ? sessionManager.HistoryService : null) ?? new SessionHistoryService();
 
             InitializeComponent();
             WindowCorners.ApplyRounded(this);
+            ThemeManager.ApplyTheme(this);
+            ThemeManager.ThemeChanged += OnThemeChanged;
+            Closed += (s, e) => ThemeManager.ThemeChanged -= OnThemeChanged;
             viewInitialized = true;
 
             LstGames.ItemsSource = filteredGames;
+            if (LstGamesGrid != null) LstGamesGrid.ItemsSource = filteredGames;
+            if (LstRecentlyPlayedList != null) LstRecentlyPlayedList.ItemsSource = recentlyPlayedGames;
+            if (LstRecentlyPlayedGrid != null) LstRecentlyPlayedGrid.ItemsSource = recentlyPlayedGames;
+            if (ScrollCertified != null)
+            {
+                ScrollCertified.AddHandler(FrameworkElement.RequestBringIntoViewEvent, new RequestBringIntoViewEventHandler((s, e) => e.Handled = true));
+            }
             LstLearned.ItemsSource = filteredLearned;
             if (LstDashboardFeatured != null) LstDashboardFeatured.ItemsSource = dashboardFeaturedGames;
+            if (LstHistory != null) LstHistory.ItemsSource = historyViewModels;
+
+            if (this.historyService != null)
+            {
+                this.historyService.HistoryChanged += () => Dispatcher.BeginInvoke(new Action(() =>
+                {
+                    LoadHistoryView();
+                    UpdateRecentlyPlayedGames();
+                }));
+            }
 
             gamepadNav = new GamepadNavigationService(this);
             gamepadNav.TabCycleRequested += OnGamepadTabCycle;
@@ -113,9 +143,11 @@ namespace ApexSenseBridgeTray
             }
 
             LoadGames();
+            InitViewMode();
             LoadLearnedItems();
             UpdateDashboardStatus();
             UpdateSettingsView();
+            LoadCustomWallpaper(settings?.BackgroundImagePath);
 
             controllerDetection = new ControllerDetectionService();
             controllerDetection.StatusChanged += status => Dispatcher.BeginInvoke(
@@ -127,23 +159,7 @@ namespace ApexSenseBridgeTray
             StateChanged += (s, e) => UpdateStatusTimer();
             UpdateStatusTimer();
 
-            if (string.Equals(initialTab, "games", StringComparison.OrdinalIgnoreCase) ||
-                string.Equals(initialTab, "certified", StringComparison.OrdinalIgnoreCase))
-            {
-                SetCurrentTab(1);
-            }
-            else if (string.Equals(initialTab, "learned", StringComparison.OrdinalIgnoreCase))
-            {
-                SetCurrentTab(2);
-            }
-            else if (string.Equals(initialTab, "settings", StringComparison.OrdinalIgnoreCase))
-            {
-                SetCurrentTab(3);
-            }
-            else
-            {
-                SetCurrentTab(0);
-            }
+            SelectTab(initialTab);
 
             LocalizationManager.LanguageChanged += () =>
             {
@@ -157,6 +173,7 @@ namespace ApexSenseBridgeTray
                         {
                             item.RefreshLocalization();
                         }
+                        UpdateRecentlyPlayedGames();
                         UpdateTabTitles();
                         UpdateDashboardStatus();
                         UpdateSettingsView();
@@ -287,8 +304,8 @@ namespace ApexSenseBridgeTray
         {
             ClearAllNavHighlights();
             int next = currentTabIndex + delta;
-            if (next < 0) next = 3;
-            else if (next > 3) next = 0;
+            if (next < 0) next = 4;
+            else if (next > 4) next = 0;
             SetCurrentTab(next);
             if (isGamepadMode) InitTabNavigation();
         }
@@ -688,7 +705,9 @@ namespace ApexSenseBridgeTray
                 }
                 else if (currentTabIndex == 1)
                 {
-                    SelectGame(selectedGameIndex - 1);
+                    bool isGrid = RadViewGrid?.IsChecked == true;
+                    int step = isGrid ? 8 : 1;
+                    SelectGame(selectedGameIndex - step);
                 }
                 else if (currentTabIndex == 2)
                 {
@@ -719,7 +738,9 @@ namespace ApexSenseBridgeTray
                 }
                 else if (currentTabIndex == 1)
                 {
-                    SelectGame(selectedGameIndex + 1);
+                    bool isGrid = RadViewGrid?.IsChecked == true;
+                    int step = isGrid ? 8 : 1;
+                    SelectGame(selectedGameIndex + step);
                 }
                 else if (currentTabIndex == 2)
                 {
@@ -984,7 +1005,7 @@ namespace ApexSenseBridgeTray
 
         private void CycleGameFilter()
         {
-            var filters = new[] { RadAll, RadAdaptive, RadHaptic, RadExcluded };
+            var filters = new[] { RadAll, RadAdaptive, RadHaptic, RadCustomProfile, RadExcluded };
             int current = Array.FindIndex(filters, f => f != null && f.IsChecked == true);
             var next = filters[(current + 1) % filters.Length];
             if (next != null) next.IsChecked = true;
@@ -1101,7 +1122,8 @@ namespace ApexSenseBridgeTray
                 ScrollViewer targetScroll = null;
                 if (currentTabIndex == 1) targetScroll = ScrollCertified;
                 else if (currentTabIndex == 2) targetScroll = ScrollLearned;
-                else if (currentTabIndex == 3) targetScroll = ScrollSettings;
+                else if (currentTabIndex == 3) targetScroll = ScrollHistory;
+                else if (currentTabIndex == 4) targetScroll = ScrollSettings;
 
                 if (targetScroll != null)
                 {
@@ -1114,6 +1136,31 @@ namespace ApexSenseBridgeTray
 
         #region Navigation Tabs
 
+        public void SelectTab(string tabName)
+        {
+            if (string.Equals(tabName, "games", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(tabName, "certified", StringComparison.OrdinalIgnoreCase))
+            {
+                SetCurrentTab(1);
+            }
+            else if (string.Equals(tabName, "learned", StringComparison.OrdinalIgnoreCase))
+            {
+                SetCurrentTab(2);
+            }
+            else if (string.Equals(tabName, "history", StringComparison.OrdinalIgnoreCase))
+            {
+                SetCurrentTab(3);
+            }
+            else if (string.Equals(tabName, "settings", StringComparison.OrdinalIgnoreCase))
+            {
+                SetCurrentTab(4);
+            }
+            else
+            {
+                SetCurrentTab(0);
+            }
+        }
+
         private void SetCurrentTab(int index)
         {
             // XAML raises Checked while named controls are still being created.
@@ -1124,17 +1171,19 @@ namespace ApexSenseBridgeTray
             if (NavTabDashboard != null) NavTabDashboard.IsChecked = (index == 0);
             if (NavTabCertified != null) NavTabCertified.IsChecked = (index == 1);
             if (NavTabLearned != null) NavTabLearned.IsChecked = (index == 2);
-            if (NavTabSettings != null) NavTabSettings.IsChecked = (index == 3);
+            if (NavTabHistory != null) NavTabHistory.IsChecked = (index == 3);
+            if (NavTabSettings != null) NavTabSettings.IsChecked = (index == 4);
 
             if (PanelDashboard != null) PanelDashboard.Visibility = (index == 0) ? Visibility.Visible : Visibility.Collapsed;
             if (PanelCertifiedGames != null) PanelCertifiedGames.Visibility = (index == 1) ? Visibility.Visible : Visibility.Collapsed;
             if (PanelLearnedExecutables != null) PanelLearnedExecutables.Visibility = (index == 2) ? Visibility.Visible : Visibility.Collapsed;
-            if (ScrollSettings != null) ScrollSettings.Visibility = (index == 3) ? Visibility.Visible : Visibility.Collapsed;
+            if (PanelHistory != null) PanelHistory.Visibility = (index == 3) ? Visibility.Visible : Visibility.Collapsed;
+            if (ScrollSettings != null) ScrollSettings.Visibility = (index == 4) ? Visibility.Visible : Visibility.Collapsed;
             UpdateContextualGamepadHints();
             if (changed)
             {
-                FrameworkElement[] panels = { PanelDashboard, PanelCertifiedGames, PanelLearnedExecutables, ScrollSettings };
-                AnimatePanelIn(panels[index]);
+                FrameworkElement[] panels = { PanelDashboard, PanelCertifiedGames, PanelLearnedExecutables, PanelHistory, ScrollSettings };
+                if (index >= 0 && index < panels.Length) AnimatePanelIn(panels[index]);
             }
 
             if (index == 0)
@@ -1147,6 +1196,10 @@ namespace ApexSenseBridgeTray
                 {
                     SelectGame(0);
                 }
+            }
+            else if (index == 3)
+            {
+                LoadHistoryView();
             }
             if (isGamepadMode) InitTabNavigation();
         }
@@ -1181,7 +1234,8 @@ namespace ApexSenseBridgeTray
             if (NavTabDashboard != null && NavTabDashboard.IsChecked == true) SetCurrentTab(0);
             else if (NavTabCertified != null && NavTabCertified.IsChecked == true) SetCurrentTab(1);
             else if (NavTabLearned != null && NavTabLearned.IsChecked == true) SetCurrentTab(2);
-            else if (NavTabSettings != null && NavTabSettings.IsChecked == true) SetCurrentTab(3);
+            else if (NavTabHistory != null && NavTabHistory.IsChecked == true) SetCurrentTab(3);
+            else if (NavTabSettings != null && NavTabSettings.IsChecked == true) SetCurrentTab(4);
         }
 
         private void OnJumpToGamesClick(object sender, MouseButtonEventArgs e)
@@ -1624,7 +1678,102 @@ namespace ApexSenseBridgeTray
         #region Certified Games (Master-Detail)
 
         public GameItemViewModel SelectedGame =>
-            (selectedGameIndex >= 0 && selectedGameIndex < filteredGames.Count) ? filteredGames[selectedGameIndex] : null;
+            selectedOverrideGame ?? ((selectedGameIndex >= 0 && selectedGameIndex < filteredGames.Count) ? filteredGames[selectedGameIndex] : null);
+
+        private void InitViewMode()
+        {
+            bool isGrid = string.Equals(settings?.GameListViewMode, "grid", StringComparison.OrdinalIgnoreCase);
+            if (RadViewGrid != null) RadViewGrid.IsChecked = isGrid;
+            if (RadViewList != null) RadViewList.IsChecked = !isGrid;
+            ApplyViewMode(isGrid);
+        }
+
+        private void OnViewModeChanged(object sender, RoutedEventArgs e)
+        {
+            if (!viewInitialized) return;
+            bool isGrid = RadViewGrid?.IsChecked == true;
+            if (settings != null)
+            {
+                settings.GameListViewMode = isGrid ? "grid" : "list";
+                settings.Save();
+            }
+            ApplyViewMode(isGrid);
+        }
+
+        private void ApplyViewMode(bool isGrid)
+        {
+            if (LstGames != null) LstGames.Visibility = isGrid ? Visibility.Collapsed : Visibility.Visible;
+            if (LstGamesGrid != null) LstGamesGrid.Visibility = isGrid ? Visibility.Visible : Visibility.Collapsed;
+            if (LstRecentlyPlayedList != null) LstRecentlyPlayedList.Visibility = isGrid ? Visibility.Collapsed : Visibility.Visible;
+            if (LstRecentlyPlayedGrid != null) LstRecentlyPlayedGrid.Visibility = isGrid ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void UpdateRecentlyPlayedGames()
+        {
+            if (allGameViewModels.Count == 0) return;
+
+            var records = historyService?.GetAllRecords() ?? new List<SessionRecord>();
+            var latestPlayedMap = new Dictionary<string, DateTime>(StringComparer.OrdinalIgnoreCase);
+
+            foreach (var r in records)
+            {
+                if (r == null || r.StartedAt == default(DateTime)) continue;
+                if (!string.IsNullOrWhiteSpace(r.GameKey) && !latestPlayedMap.ContainsKey(r.GameKey))
+                {
+                    latestPlayedMap[r.GameKey] = r.StartedAt;
+                }
+                if (!string.IsNullOrWhiteSpace(r.GameTitle) && !latestPlayedMap.ContainsKey(r.GameTitle))
+                {
+                    latestPlayedMap[r.GameTitle] = r.StartedAt;
+                }
+            }
+
+            foreach (var vm in allGameViewModels)
+            {
+                DateTime dt;
+                if (latestPlayedMap.TryGetValue(vm.Normalized, out dt) ||
+                    latestPlayedMap.TryGetValue(vm.Title, out dt))
+                {
+                    vm.LastPlayedAt = dt;
+                }
+                else
+                {
+                    vm.LastPlayedAt = null;
+                }
+            }
+
+            var recent = allGameViewModels
+                .Where(g => g.LastPlayedAt.HasValue && !g.IsExcluded)
+                .OrderByDescending(g => g.LastPlayedAt.Value)
+                .Take(8)
+                .ToList();
+
+            recentlyPlayedGames.Clear();
+            foreach (var g in recent)
+            {
+                recentlyPlayedGames.Add(g);
+            }
+
+            UpdateRecentlyPlayedVisibility();
+            UpdateDashboardShelf();
+        }
+
+        private void UpdateRecentlyPlayedVisibility()
+        {
+            bool isSearchingOrFiltering = (TxtSearch != null && !string.IsNullOrWhiteSpace(TxtSearch.Text)) ||
+                                          (RadAll != null && RadAll.IsChecked != true);
+
+            bool showRecent = !isSearchingOrFiltering && recentlyPlayedGames.Count > 0;
+
+            if (PnlRecentlyPlayedSection != null)
+            {
+                PnlRecentlyPlayedSection.Visibility = showRecent ? Visibility.Visible : Visibility.Collapsed;
+            }
+            if (TxtAllGamesSectionTitle != null)
+            {
+                TxtAllGamesSectionTitle.Visibility = showRecent ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
 
         private void LoadGames()
         {
@@ -1637,16 +1786,40 @@ namespace ApexSenseBridgeTray
                 {
                     Game = g,
                     IsExcluded = settings.IsGameExcluded(g.Normalized),
-                    SelectedApexProfileSlot = settings.GetApexProfileSlot(g.Normalized)
+                    SelectedApexProfileSlot = settings.GetApexProfileSlot(g.Normalized),
+                    HasCustomProfile = profileService != null && profileService.GetProfile(g.Normalized)?.HasCustomValues == true
                 };
                 allGameViewModels.Add(vm);
             }
 
+            UpdateRecentlyPlayedGames();
             ApplyFilter();
             UpdateTabTitles();
+            UpdateDashboardShelf();
+        }
 
-            // Issue #29: the home shelf leads with the latest catalogue additions.
-            // The earliest "addedAt" is the initial import, so only later dates are real additions.
+        private const int DashboardShelfSize = 14;
+        private const int NewGameBadgeDays = 30;
+        private bool shelfShowsAdditions;
+
+        private void UpdateDashboardShelf()
+        {
+            if (recentlyPlayedGames.Count > 0)
+            {
+                // Phương án A: Kệ Dashboard ưu tiên hiển thị Game đã chơi gần đây
+                dashboardFeaturedGames.Clear();
+                foreach (var g in recentlyPlayedGames.Take(DashboardShelfSize))
+                {
+                    dashboardFeaturedGames.Add(g);
+                }
+                dashboardShelfIndex = 0;
+                shelfScrollTarget = null;
+                if (ScrollDashboardShelf != null) ScrollDashboardShelf.ScrollToHorizontalOffset(0);
+                UpdateShelfTitle();
+                return;
+            }
+
+            // Mặc định khi chưa có game nào đã chơi: hiển thị game mới thêm / nổi bật
             var dated = allGameViewModels.Where(g => g.AddedAt.HasValue).ToList();
             DateTime? baseline = dated.Count > 0 ? dated.Min(g => g.AddedAt.Value) : (DateTime?)null;
             DateTime today = DateTime.UtcNow.Date;
@@ -1680,14 +1853,19 @@ namespace ApexSenseBridgeTray
             UpdateShelfTitle();
         }
 
-        private const int DashboardShelfSize = 14;
-        private const int NewGameBadgeDays = 30;
-        private bool shelfShowsAdditions;
-
         private void UpdateShelfTitle()
         {
             if (TxtShelfTitle != null)
-                TxtShelfTitle.Text = LocalizationManager.Get(shelfShowsAdditions ? "Loc_ShelfRecentlyAdded" : "Loc_NavCertifiedGames");
+            {
+                if (recentlyPlayedGames.Count > 0)
+                {
+                    TxtShelfTitle.Text = LocalizationManager.Get("Loc_RecentlyPlayedTitle");
+                }
+                else
+                {
+                    TxtShelfTitle.Text = LocalizationManager.Get(shelfShowsAdditions ? "Loc_ShelfRecentlyAdded" : "Loc_NavCertifiedGames");
+                }
+            }
         }
 
         private static int GetFeaturedScore(GameItemViewModel game)
@@ -1719,6 +1897,7 @@ namespace ApexSenseBridgeTray
             string query = TxtSearch?.Text?.Trim()?.ToLowerInvariant() ?? "";
             bool filterAdaptive = RadAdaptive?.IsChecked == true;
             bool filterHaptic = RadHaptic?.IsChecked == true;
+            bool filterCustom = RadCustomProfile?.IsChecked == true;
             bool filterExcluded = RadExcluded?.IsChecked == true;
 
             var matching = allGameViewModels.Where(g =>
@@ -1727,6 +1906,7 @@ namespace ApexSenseBridgeTray
                 if (!filterExcluded && g.IsExcluded && RadAll?.IsChecked != true) return false;
                 if (filterAdaptive && !g.AdaptiveTriggers) return false;
                 if (filterHaptic && !g.HapticFeedback) return false;
+                if (filterCustom && !g.HasCustomProfile) return false;
 
                 if (!string.IsNullOrEmpty(query))
                 {
@@ -1755,46 +1935,78 @@ namespace ApexSenseBridgeTray
             else
             {
                 selectedGameIndex = -1;
+                selectedOverrideGame = null;
                 UpdateDetailPane();
             }
+
+            UpdateRecentlyPlayedVisibility();
         }
 
-        private void SelectGame(int newIndex)
+        private void SelectGame(int newIndex, bool scrollIntoView = true)
         {
             if (filteredGames.Count == 0)
             {
                 selectedGameIndex = -1;
+                selectedOverrideGame = null;
                 UpdateDetailPane();
                 return;
             }
 
             int clamped = Math.Max(0, Math.Min(filteredGames.Count - 1, newIndex));
 
-            if (selectedGameIndex >= 0 && selectedGameIndex < filteredGames.Count)
+            foreach (var g in allGameViewModels)
             {
-                filteredGames[selectedGameIndex].IsSelected = false;
+                g.IsSelected = false;
             }
 
             selectedGameIndex = clamped;
             var selected = filteredGames[selectedGameIndex];
             selected.IsSelected = true;
+            selectedOverrideGame = selected;
 
             UpdateDetailPane();
 
-            if (ScrollCertified != null)
+            if (scrollIntoView && ScrollCertified != null)
             {
-                double targetOffset = selectedGameIndex * 62.0;
+                bool isGrid = RadViewGrid?.IsChecked == true;
+                double itemHeight = isGrid ? 116.0 : 62.0;
+                int row = isGrid ? (selectedGameIndex / 8) : selectedGameIndex;
+
+                double headerOffset = (PnlRecentlyPlayedSection != null && PnlRecentlyPlayedSection.Visibility == Visibility.Visible)
+                    ? (PnlRecentlyPlayedSection.ActualHeight > 0 ? PnlRecentlyPlayedSection.ActualHeight : 0.0)
+                    : 0.0;
+
+                double targetOffset = headerOffset + (row * itemHeight);
                 double currentOffset = ScrollCertified.VerticalOffset;
                 double viewHeight = ScrollCertified.ActualHeight > 0 ? ScrollCertified.ActualHeight : 400.0;
 
                 if (targetOffset < currentOffset)
                 {
-                    ScrollCertified.ScrollToVerticalOffset(targetOffset);
+                    ScrollCertified.ScrollToVerticalOffset(Math.Max(0, targetOffset - 8.0));
                 }
-                else if (targetOffset + 62.0 > currentOffset + viewHeight)
+                else if (targetOffset + itemHeight > currentOffset + viewHeight)
                 {
-                    ScrollCertified.ScrollToVerticalOffset(targetOffset - viewHeight + 80.0);
+                    ScrollCertified.ScrollToVerticalOffset(targetOffset - viewHeight + itemHeight + 16.0);
                 }
+            }
+        }
+
+        private void SelectGame(GameItemViewModel target, bool scrollIntoView = false)
+        {
+            if (target == null) return;
+            int idx = filteredGames.IndexOf(target);
+            if (idx >= 0)
+            {
+                SelectGame(idx, scrollIntoView);
+            }
+            else
+            {
+                foreach (var g in allGameViewModels)
+                {
+                    g.IsSelected = (g == target);
+                }
+                selectedOverrideGame = target;
+                UpdateDetailPane();
             }
         }
 
@@ -1839,6 +2051,7 @@ namespace ApexSenseBridgeTray
                     ? LocalizationManager.Get("Loc_StateIncluded")
                     : LocalizationManager.Get("Loc_BtnExcludeCurrent");
             }
+            UpdateGameProfileUI();
         }
 
         private void UpdateExecutableChoices()
@@ -1893,11 +2106,8 @@ namespace ApexSenseBridgeTray
         {
             if (sender is FrameworkElement el && el.DataContext is GameItemViewModel vm)
             {
-                int idx = filteredGames.IndexOf(vm);
-                if (idx >= 0)
-                {
-                    SelectGame(idx);
-                }
+                SelectGame(vm, scrollIntoView: false);
+                e.Handled = true;
             }
         }
 
@@ -2169,6 +2379,8 @@ namespace ApexSenseBridgeTray
             }
 
             UpdateLanguageDisplay();
+            UpdateConsoleThemeRadios();
+            UpdateWallpaperUI();
 
             if (updateChecker != null && TxtVersionInfo != null)
             {
@@ -2237,6 +2449,240 @@ namespace ApexSenseBridgeTray
             if (TxtCurrentLanguage != null)
             {
                 TxtCurrentLanguage.Text = LanguageCatalog.GetNativeName(LocalizationManager.CurrentLanguage);
+            }
+        }
+
+        private bool updatingConsoleThemes = false;
+
+        private void OnThemeChanged()
+        {
+            Dispatcher.BeginInvoke(new Action(() =>
+            {
+                ThemeManager.ApplyTheme(this);
+                UpdateConsoleThemeRadios();
+            }));
+        }
+
+        private void UpdateConsoleThemeRadios()
+        {
+            if (ConsoleRadThemePS == null) return;
+            updatingConsoleThemes = true;
+            try
+            {
+                string cur = ThemeManager.CurrentTheme ?? "playstation";
+                ConsoleRadThemePS.IsChecked = cur == "playstation";
+                if (ConsoleRadThemeXbox != null) ConsoleRadThemeXbox.IsChecked = cur == "xbox";
+                if (ConsoleRadThemeCyber != null) ConsoleRadThemeCyber.IsChecked = cur == "cyberpunk";
+                if (ConsoleRadThemeOled != null) ConsoleRadThemeOled.IsChecked = cur == "oled";
+                if (ConsoleRadThemeLight != null) ConsoleRadThemeLight.IsChecked = cur == "light";
+                if (ConsoleRadThemeSystem != null) ConsoleRadThemeSystem.IsChecked = cur == "system";
+            }
+            finally
+            {
+                updatingConsoleThemes = false;
+            }
+        }
+
+        private void OnConsoleThemeChecked(object sender, RoutedEventArgs e)
+        {
+            if (!viewInitialized || updatingConsoleThemes) return;
+            string themeKey = "playstation";
+            if (ConsoleRadThemeXbox != null && ConsoleRadThemeXbox.IsChecked == true) themeKey = "xbox";
+            else if (ConsoleRadThemeCyber != null && ConsoleRadThemeCyber.IsChecked == true) themeKey = "cyberpunk";
+            else if (ConsoleRadThemeOled != null && ConsoleRadThemeOled.IsChecked == true) themeKey = "oled";
+            else if (ConsoleRadThemeLight != null && ConsoleRadThemeLight.IsChecked == true) themeKey = "light";
+            else if (ConsoleRadThemeSystem != null && ConsoleRadThemeSystem.IsChecked == true) themeKey = "system";
+
+            ThemeManager.SetTheme(themeKey, clearCustomAccent: true);
+            if (settings != null)
+            {
+                settings.SelectedTheme = themeKey;
+                settings.CustomAccentColor = null;
+                settings.Save();
+            }
+            ShowToast(LocalizationManager.Get("Loc_ToastThemeChanged"), true);
+        }
+
+        private void OnQuickColorSwatchClick(object sender, RoutedEventArgs e)
+        {
+            var btn = sender as Button;
+            string hex = btn?.Tag as string;
+            if (!string.IsNullOrEmpty(hex))
+            {
+                ApplyCustomAccentColor(hex);
+            }
+        }
+
+        private void OnPickCustomAccentClick(object sender, RoutedEventArgs e)
+        {
+            using (var dlg = new System.Windows.Forms.ColorDialog())
+            {
+                dlg.FullOpen = true;
+                if (!string.IsNullOrEmpty(settings?.CustomAccentColor))
+                {
+                    try
+                    {
+                        var c = (System.Windows.Media.Color)System.Windows.Media.ColorConverter.ConvertFromString(settings.CustomAccentColor);
+                        dlg.Color = System.Drawing.Color.FromArgb(c.R, c.G, c.B);
+                    }
+                    catch { }
+                }
+
+                if (dlg.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                {
+                    string hex = string.Format("#{0:X2}{1:X2}{2:X2}", dlg.Color.R, dlg.Color.G, dlg.Color.B);
+                    ApplyCustomAccentColor(hex);
+                }
+            }
+        }
+
+        private void ApplyCustomAccentColor(string hex)
+        {
+            if (string.IsNullOrEmpty(hex)) return;
+            ThemeManager.SetCustomAccent(hex);
+            if (settings != null)
+            {
+                settings.CustomAccentColor = hex;
+                settings.Save();
+            }
+            ShowToast(LocalizationManager.Get("Loc_ToastThemeChanged"), true);
+        }
+
+        private void LoadCustomWallpaper(string path)
+        {
+            if (ImgCustomBackdrop == null || RectCustomBackdropDimmer == null) return;
+
+            if (string.IsNullOrEmpty(path) || !File.Exists(path))
+            {
+                ImgCustomBackdrop.Source = null;
+                ImgCustomBackdrop.Visibility = Visibility.Collapsed;
+                RectCustomBackdropDimmer.Visibility = Visibility.Collapsed;
+                UpdateWallpaperUI(null);
+                return;
+            }
+
+            try
+            {
+                var bi = new BitmapImage();
+                bi.BeginInit();
+                bi.CacheOption = BitmapCacheOption.OnLoad;
+                bi.UriSource = new Uri(path, UriKind.Absolute);
+                bi.EndInit();
+                bi.Freeze();
+
+                ImgCustomBackdrop.Source = bi;
+                ImgCustomBackdrop.Visibility = Visibility.Visible;
+                RectCustomBackdropDimmer.Visibility = Visibility.Visible;
+                UpdateWallpaperUI(path);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine("[Wallpaper] Load failed: " + ex.Message);
+                ImgCustomBackdrop.Source = null;
+                ImgCustomBackdrop.Visibility = Visibility.Collapsed;
+                RectCustomBackdropDimmer.Visibility = Visibility.Collapsed;
+                UpdateWallpaperUI(null);
+            }
+        }
+
+        private void UpdateWallpaperUI(string currentPath = null)
+        {
+            string path = currentPath ?? settings?.BackgroundImagePath;
+            bool hasWallpaper = !string.IsNullOrEmpty(path) && File.Exists(path);
+
+            if (TxtWallpaperStatus != null)
+            {
+                TxtWallpaperStatus.Text = hasWallpaper
+                    ? System.IO.Path.GetFileName(path)
+                    : LocalizationManager.Get("Loc_WallpaperDefault");
+            }
+
+            if (BtnRemoveWallpaper != null)
+            {
+                BtnRemoveWallpaper.Visibility = hasWallpaper ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        private void OnBrowseWallpaperClick(object sender, RoutedEventArgs e)
+        {
+            var dialog = new OpenFileDialog
+            {
+                Title = LocalizationManager.Get("Loc_WallpaperTitle"),
+                Filter = "Image Files (*.png;*.jpg;*.jpeg;*.bmp;*.webp)|*.png;*.jpg;*.jpeg;*.bmp;*.webp|All Files (*.*)|*.*",
+                InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyPictures)
+            };
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                if (settings != null)
+                {
+                    settings.BackgroundImagePath = dialog.FileName;
+                    settings.Save();
+                }
+                LoadCustomWallpaper(dialog.FileName);
+                ShowToast(LocalizationManager.Get("Loc_ToastWallpaperApplied"), true);
+            }
+        }
+
+        private void OnRemoveWallpaperClick(object sender, RoutedEventArgs e)
+        {
+            if (settings != null)
+            {
+                settings.BackgroundImagePath = null;
+                settings.Save();
+            }
+            LoadCustomWallpaper(null);
+            ShowToast(LocalizationManager.Get("Loc_ToastWallpaperRemoved"), true);
+        }
+
+        private void OnBackupAllProfilesClick(object sender, RoutedEventArgs e)
+        {
+            if (profileService == null) return;
+            var dialog = new SaveFileDialog
+            {
+                Title = LocalizationManager.Get("Loc_BackupAllProfiles"),
+                FileName = string.Format("apexsensebridge-profiles-backup-{0:yyyyMMdd}.json", DateTime.Now),
+                DefaultExt = ".json",
+                Filter = "JSON Backup (*.json)|*.json"
+            };
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                bool ok = profileService.ExportAllProfiles(dialog.FileName);
+                if (ok)
+                {
+                    ShowToast(LocalizationManager.Get("Loc_ToastExportSuccess"), true);
+                }
+                else
+                {
+                    MessageBox.Show(this, LocalizationManager.Get("Loc_ToastImportFailed"), LocalizationManager.Get("Loc_BackupAllProfiles"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void OnRestoreAllProfilesClick(object sender, RoutedEventArgs e)
+        {
+            if (profileService == null) return;
+            var dialog = new OpenFileDialog
+            {
+                Title = LocalizationManager.Get("Loc_RestoreAllProfiles"),
+                DefaultExt = ".json",
+                Filter = "JSON Backup (*.json)|*.json|All Files (*.*)|*.*"
+            };
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                int count = profileService.ImportAllProfiles(dialog.FileName);
+                if (count > 0)
+                {
+                    LoadGames();
+                    UpdateGameProfileUI();
+                    ShowToast(string.Format("{0} ({1})", LocalizationManager.Get("Loc_ToastImportSuccess"), count), true);
+                }
+                else
+                {
+                    MessageBox.Show(this, LocalizationManager.Get("Loc_ToastImportFailed"), LocalizationManager.Get("Loc_RestoreAllProfiles"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
 
@@ -2531,10 +2977,278 @@ namespace ApexSenseBridgeTray
         {
             if (TxtNavCertifiedCount != null) TxtNavCertifiedCount.Text = allGameViewModels.Count.ToString();
             if (TxtNavLearnedCount != null) TxtNavLearnedCount.Text = allLearnedViewModels.Count.ToString();
+            if (TxtNavHistoryCount != null && historyService != null) TxtNavHistoryCount.Text = historyService.GetAllRecords().Count.ToString();
             if (TxtDashCountGames != null) TxtDashCountGames.Text = allGameViewModels.Count.ToString();
             if (TxtDashCountLearned != null) TxtDashCountLearned.Text = allLearnedViewModels.Count.ToString();
             UpdateShelfTitle();
         }
+
+        #region Per-Game Profile & Session History Handlers
+
+        private void OnProfileTriggerChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (TxtProfileTriggerVal != null && SldProfileTrigger != null)
+                TxtProfileTriggerVal.Text = string.Format("{0}%", (int)SldProfileTrigger.Value);
+        }
+
+        private void OnProfileVibrationChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
+        {
+            if (TxtProfileVibrationVal != null && SldProfileVibration != null)
+                TxtProfileVibrationVal.Text = string.Format("{0}%", (int)SldProfileVibration.Value);
+        }
+
+        public void ShowToast(string message, bool isSuccess = true)
+        {
+            if (ToastNotification == null || TxtToastMessage == null) return;
+            TxtToastMessage.Text = message;
+            if (IconToastStatus != null)
+            {
+                IconToastStatus.Text = isSuccess ? "✓" : "ℹ";
+                IconToastStatus.Foreground = isSuccess
+                    ? new SolidColorBrush(Color.FromRgb(0x34, 0xD3, 0x99))
+                    : new SolidColorBrush(Color.FromRgb(0x60, 0xA5, 0xFA));
+            }
+
+            var anim = new DoubleAnimationUsingKeyFrames();
+            anim.KeyFrames.Add(new LinearDoubleKeyFrame(0.0, KeyTime.FromTimeSpan(TimeSpan.Zero)));
+            anim.KeyFrames.Add(new SplineDoubleKeyFrame(1.0, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(220))));
+            anim.KeyFrames.Add(new LinearDoubleKeyFrame(1.0, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(2200))));
+            anim.KeyFrames.Add(new SplineDoubleKeyFrame(0.0, KeyTime.FromTimeSpan(TimeSpan.FromMilliseconds(2600))));
+
+            ToastNotification.BeginAnimation(OpacityProperty, anim);
+        }
+
+        private void OnProfileSaveClick(object sender, RoutedEventArgs e)
+        {
+            var game = SelectedGame;
+            if (game == null || profileService == null) return;
+            var profile = profileService.GetOrCreateProfile(game.Normalized, game.Title);
+            if (profile != null)
+            {
+                profile.TriggerStrengthPercent = (int)SldProfileTrigger.Value;
+                profile.VibrationStrengthPercent = (int)SldProfileVibration.Value;
+                profileService.SaveProfile(profile);
+            }
+            game.HasCustomProfile = true;
+            UpdateGameProfileUI();
+            ShowToast(LocalizationManager.Get("Loc_ToastSavedProfile"), true);
+        }
+
+        private void OnProfileResetClick(object sender, RoutedEventArgs e)
+        {
+            var game = SelectedGame;
+            if (game == null || profileService == null) return;
+            profileService.DeleteProfile(game.Normalized);
+            game.HasCustomProfile = false;
+            UpdateGameProfileUI();
+            ShowToast(LocalizationManager.Get("Loc_ToastResetProfile"), true);
+        }
+
+        private void OnPresetSubtleClick(object sender, RoutedEventArgs e)
+        {
+            ApplyHapticPreset(GameProfile.PresetSubtle, LocalizationManager.Get("Loc_PresetSubtle"));
+        }
+
+        private void OnPresetBalancedClick(object sender, RoutedEventArgs e)
+        {
+            ApplyHapticPreset(GameProfile.PresetBalanced, LocalizationManager.Get("Loc_PresetBalanced"));
+        }
+
+        private void OnPresetIntenseClick(object sender, RoutedEventArgs e)
+        {
+            ApplyHapticPreset(GameProfile.PresetIntense, LocalizationManager.Get("Loc_PresetIntense"));
+        }
+
+        private void ApplyHapticPreset(string presetName, string displayName)
+        {
+            var game = SelectedGame;
+            if (game == null || profileService == null) return;
+            var profile = profileService.GetOrCreateProfile(game.Normalized, game.Title);
+            if (profile != null)
+            {
+                profile.ApplyPreset(presetName);
+                profileService.SaveProfile(profile);
+                if (SldProfileTrigger != null && profile.TriggerStrengthPercent.HasValue)
+                    SldProfileTrigger.Value = profile.TriggerStrengthPercent.Value;
+                if (SldProfileVibration != null && profile.VibrationStrengthPercent.HasValue)
+                    SldProfileVibration.Value = profile.VibrationStrengthPercent.Value;
+            }
+            game.HasCustomProfile = true;
+            UpdateGameProfileUI();
+            ShowToast(string.Format("{0}: {1}", LocalizationManager.Get("Loc_GameProfileCustom"), displayName), true);
+        }
+
+        private void OnProfileExportClick(object sender, RoutedEventArgs e)
+        {
+            var game = SelectedGame;
+            if (game == null || profileService == null) return;
+            var profile = profileService.GetOrCreateProfile(game.Normalized, game.Title);
+            if (profile != null && !profile.HasCustomValues)
+            {
+                profile.TriggerStrengthPercent = (int)(SldProfileTrigger?.Value ?? 100);
+                profile.VibrationStrengthPercent = (int)(SldProfileVibration?.Value ?? 100);
+                profileService.SaveProfile(profile);
+            }
+
+            var dialog = new SaveFileDialog
+            {
+                Title = LocalizationManager.Get("Loc_ExportProfile"),
+                FileName = string.Format("{0}.apexprofile.json", game.Normalized),
+                DefaultExt = ".apexprofile.json",
+                Filter = "APEX Game Profile (*.apexprofile.json)|*.apexprofile.json|JSON (*.json)|*.json"
+            };
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                bool ok = profileService.ExportProfile(game.Normalized, dialog.FileName);
+                if (ok)
+                {
+                    ShowToast(LocalizationManager.Get("Loc_ToastExportSuccess"), true);
+                }
+                else
+                {
+                    MessageBox.Show(this, LocalizationManager.Get("Loc_ToastImportFailed"), LocalizationManager.Get("Loc_ExportProfile"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private void OnProfileImportClick(object sender, RoutedEventArgs e)
+        {
+            var game = SelectedGame;
+            if (game == null || profileService == null) return;
+
+            var dialog = new OpenFileDialog
+            {
+                Title = LocalizationManager.Get("Loc_ImportProfile"),
+                DefaultExt = ".apexprofile.json",
+                Filter = "APEX Game Profile (*.apexprofile.json;*.json)|*.apexprofile.json;*.json|All Files (*.*)|*.*"
+            };
+
+            if (dialog.ShowDialog(this) == true)
+            {
+                var imported = profileService.ImportProfile(dialog.FileName);
+                if (imported != null)
+                {
+                    imported.GameKey = game.Normalized;
+                    imported.DisplayName = game.Title;
+                    profileService.SaveProfile(imported);
+                    game.HasCustomProfile = true;
+                    UpdateGameProfileUI();
+                    ShowToast(LocalizationManager.Get("Loc_ToastImportSuccess"), true);
+                }
+                else
+                {
+                    MessageBox.Show(this, LocalizationManager.Get("Loc_ToastImportFailed"), LocalizationManager.Get("Loc_ImportProfile"), MessageBoxButton.OK, MessageBoxImage.Error);
+                }
+            }
+        }
+
+        private async void OnProfileTestVibrationClick(object sender, RoutedEventArgs e)
+        {
+            double intensity = SldProfileVibration != null ? SldProfileVibration.Value : 100;
+            bool ok = await ControllerTestService.TestVibrationAsync(intensity, 350);
+            if (ok)
+            {
+                ShowToast(LocalizationManager.Get("Loc_TestingVibration"), true);
+            }
+            else
+            {
+                ShowToast(LocalizationManager.Get("Loc_NoControllerConnected"), false);
+            }
+        }
+
+        private async void OnTestControllerVibrationClick(object sender, RoutedEventArgs e)
+        {
+            double intensity = SliderVibrationStrength != null ? SliderVibrationStrength.Value : 100;
+            bool ok = await ControllerTestService.TestVibrationAsync(intensity, 350);
+            if (ok)
+            {
+                ShowToast(LocalizationManager.Get("Loc_TestingVibration"), true);
+            }
+            else
+            {
+                ShowToast(LocalizationManager.Get("Loc_NoControllerConnected"), false);
+            }
+        }
+
+        private void UpdateGameProfileUI()
+        {
+            var game = SelectedGame;
+            if (game == null || profileService == null) return;
+            var profile = profileService.GetProfile(game.Normalized);
+            bool hasCustom = profile != null && profile.HasCustomValues;
+
+            if (TxtGameProfileStatus != null)
+                TxtGameProfileStatus.Text = LocalizationManager.Get(hasCustom ? "Loc_GameProfileCustom" : "Loc_GameProfileDefault");
+            if (BadgeGameProfileStatus != null)
+                BadgeGameProfileStatus.Background = hasCustom
+                    ? new SolidColorBrush(Color.FromArgb(0x33, 0x10, 0xB9, 0x81))
+                    : new SolidColorBrush(Color.FromArgb(0x26, 0x3B, 0x82, 0xF6));
+
+            int triggerVal = (hasCustom && profile.TriggerStrengthPercent.HasValue) ? profile.TriggerStrengthPercent.Value : 100;
+            int vibVal = (hasCustom && profile.VibrationStrengthPercent.HasValue) ? profile.VibrationStrengthPercent.Value : 100;
+
+            if (SldProfileTrigger != null) SldProfileTrigger.Value = triggerVal;
+            if (SldProfileVibration != null) SldProfileVibration.Value = vibVal;
+            if (TxtProfileTriggerVal != null) TxtProfileTriggerVal.Text = string.Format("{0}%", triggerVal);
+            if (TxtProfileVibrationVal != null) TxtProfileVibrationVal.Text = string.Format("{0}%", vibVal);
+        }
+
+        private void LoadHistoryView()
+        {
+            if (historyService == null) return;
+            var records = historyService.GetAllRecords();
+            if (TxtNavHistoryCount != null) TxtNavHistoryCount.Text = records.Count.ToString();
+            if (TxtHistorySessionCount != null) TxtHistorySessionCount.Text = records.Count.ToString();
+            if (TxtHistoryTotalTime != null) TxtHistoryTotalTime.Text = historyService.GetTotalPlayTimeFormatted();
+
+            var topGames = historyService.GetTopGamesByPlayTime(1);
+            if (TxtHistoryTopGame != null)
+            {
+                TxtHistoryTopGame.Text = topGames.Count > 0 ? topGames[0].Key : "—";
+            }
+
+            historyViewModels.Clear();
+            var recent = historyService.GetRecentRecords(100);
+            foreach (var r in recent)
+            {
+                var vm = new SessionHistoryViewModel
+                {
+                    GameTitle = string.IsNullOrWhiteSpace(r.GameTitle) ? r.GameKey : r.GameTitle,
+                    StartedDisplay = r.StartedAt.ToLocalTime().ToString("g", CultureInfo.CurrentCulture),
+                    DurationDisplay = r.DurationFormatted,
+                    ControllerDisplay = !string.IsNullOrWhiteSpace(r.ControllerModel) ? r.ControllerModel.ToUpperInvariant() : "APEX",
+                    StatusText = LocalizationManager.Get(r.CompletedSuccessfully ? "Loc_SessionHistorySuccess" : "Loc_SessionHistoryFailed"),
+                    StatusBadgeBackground = r.CompletedSuccessfully
+                        ? new SolidColorBrush(Color.FromArgb(0x26, 0x10, 0xB9, 0x81))
+                        : new SolidColorBrush(Color.FromArgb(0x26, 0xEF, 0x44, 0x44)),
+                    StatusBadgeForeground = r.CompletedSuccessfully
+                        ? new SolidColorBrush(Color.FromRgb(0x34, 0xD3, 0x99))
+                        : new SolidColorBrush(Color.FromRgb(0xF8, 0x71, 0x71))
+                };
+                historyViewModels.Add(vm);
+            }
+
+            if (PnlHistoryEmpty != null) PnlHistoryEmpty.Visibility = records.Count == 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (LstHistory != null) LstHistory.Visibility = records.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        private void OnClearHistoryClick(object sender, RoutedEventArgs e)
+        {
+            var result = MessageBox.Show(
+                LocalizationManager.Get("Loc_SessionHistoryClearConfirm"),
+                LocalizationManager.Get("Loc_SessionHistoryTitle"),
+                MessageBoxButton.YesNo,
+                MessageBoxImage.Question);
+            if (result == MessageBoxResult.Yes && historyService != null)
+            {
+                historyService.ClearHistory();
+                LoadHistoryView();
+                ShowToast(LocalizationManager.Get("Loc_ToastClearedHistory"), true);
+            }
+        }
+
+        #endregion
 
         private void OnWindowDrag(object sender, MouseButtonEventArgs e)
         {
@@ -2679,6 +3393,39 @@ namespace ApexSenseBridgeTray
             ? LocalizationManager.Format("Loc_AddedOn", AddedAt.Value.ToString("d", CultureInfo.CurrentCulture))
             : null;
 
+        private DateTime? lastPlayedAt;
+        public DateTime? LastPlayedAt
+        {
+            get => lastPlayedAt;
+            set
+            {
+                if (lastPlayedAt != value)
+                {
+                    lastPlayedAt = value;
+                    OnPropertyChanged("LastPlayedAt");
+                    OnPropertyChanged("LastPlayedRelativeText");
+                    OnPropertyChanged("HasLastPlayed");
+                    OnPropertyChanged("LastPlayedVisibility");
+                }
+            }
+        }
+        public bool HasLastPlayed => LastPlayedAt.HasValue;
+        public Visibility LastPlayedVisibility => HasLastPlayed ? Visibility.Visible : Visibility.Collapsed;
+
+        public string LastPlayedRelativeText
+        {
+            get
+            {
+                if (!LastPlayedAt.HasValue) return string.Empty;
+                var diff = DateTime.UtcNow - LastPlayedAt.Value;
+                if (diff.TotalMinutes < 2) return LocalizationManager.Get("Loc_TimeJustNow");
+                if (diff.TotalHours < 1) return LocalizationManager.Format("Loc_TimeMinutesAgo", Math.Max(1, (int)diff.TotalMinutes));
+                if (diff.TotalDays < 1) return LocalizationManager.Format("Loc_TimeHoursAgo", Math.Max(1, (int)diff.TotalHours));
+                if (diff.TotalDays < 7) return LocalizationManager.Format("Loc_TimeDaysAgo", Math.Max(1, (int)diff.TotalDays));
+                return LastPlayedAt.Value.ToLocalTime().ToString("dd/MM/yyyy");
+            }
+        }
+
         private ImageSource coverImage;
         public ImageSource CoverImage
         {
@@ -2734,8 +3481,14 @@ namespace ApexSenseBridgeTray
 
         private void InitCover()
         {
-            if (string.IsNullOrWhiteSpace(IconUrl)) return;
-            CoverImage = CoverCacheService.GetImage(IconUrl, loadedImage =>
+            var url = IconUrl;
+            if (string.IsNullOrWhiteSpace(url) && Game != null && Game.SteamAppId > 0)
+            {
+                url = $"https://cdn.cloudflare.steamstatic.com/steam/apps/{Game.SteamAppId}/library_600x900_2x.jpg";
+            }
+
+            if (string.IsNullOrWhiteSpace(url)) return;
+            CoverImage = CoverCacheService.GetImage(url, loadedImage =>
             {
                 CoverImage = loadedImage;
             });
@@ -2793,6 +3546,7 @@ namespace ApexSenseBridgeTray
         {
             OnPropertyChanged("SelectedApexProfileSlot");
             OnPropertyChanged("SelectedApexProfileDisplay");
+            OnPropertyChanged("LastPlayedRelativeText");
         }
 
         private bool isSelected;
@@ -2828,7 +3582,37 @@ namespace ApexSenseBridgeTray
         public Visibility ExcludedBadgeVisibility => IsExcluded ? Visibility.Visible : Visibility.Collapsed;
         public double CardOpacity => IsExcluded ? 0.55 : 1.0;
 
+        private bool hasCustomProfile;
+        public bool HasCustomProfile
+        {
+            get => hasCustomProfile;
+            set
+            {
+                if (hasCustomProfile != value)
+                {
+                    hasCustomProfile = value;
+                    OnPropertyChanged("HasCustomProfile");
+                    OnPropertyChanged("CustomProfileBadgeVisibility");
+                }
+            }
+        }
+        public Visibility CustomProfileBadgeVisibility => HasCustomProfile ? Visibility.Visible : Visibility.Collapsed;
+
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
+    }
+
+    /// <summary>
+    /// ViewModel hiển thị một bản ghi session trong UI lịch sử.
+    /// </summary>
+    public sealed class SessionHistoryViewModel
+    {
+        public string GameTitle { get; set; }
+        public string StartedDisplay { get; set; }
+        public string DurationDisplay { get; set; }
+        public string ControllerDisplay { get; set; }
+        public string StatusText { get; set; }
+        public System.Windows.Media.Brush StatusBadgeBackground { get; set; }
+        public System.Windows.Media.Brush StatusBadgeForeground { get; set; }
     }
 }

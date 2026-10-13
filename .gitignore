@@ -57,6 +57,7 @@ downloads/
 packages/
 .cache/
 .tools/
+tools/
 *.tmp
 *.temp
 *.zip

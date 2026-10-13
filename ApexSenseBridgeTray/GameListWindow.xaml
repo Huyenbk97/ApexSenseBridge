@@ -8,7 +8,7 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="CanResize"
         WindowStyle="None"
-        Background="#060A16"
+        Background="{DynamicResource WindowBackground}"
         FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif">
 
     <Window.Resources>
@@ -16,6 +16,123 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/ApexSenseBridgeTray;component/Themes/ConsoleTheme.xaml"/>
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Game Card: List View Template -->
+            <DataTemplate x:Key="GameListItemTemplate">
+                <Grid Margin="0,0,10,8">
+                    <Border Style="{StaticResource FocusRing}" CornerRadius="22"
+                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}"/>
+                    <Border Style="{StaticResource ConsoleCardItemStyle}"
+                            Opacity="{Binding CardOpacity}"
+                            MouseLeftButtonDown="OnGameCardClicked">
+                        <DockPanel LastChildFill="True">
+                            <Border Width="38" Height="52" CornerRadius="8" ClipToBounds="True" Margin="0,0,14,0"
+                                    VerticalAlignment="Center" DockPanel.Dock="Left">
+                                <Grid>
+                                    <Border Background="{Binding MonogramBackground}" CornerRadius="8" Visibility="{Binding PlaceholderVisibility}">
+                                        <TextBlock Text="{Binding Initials}" FontSize="12" FontWeight="SemiBold"
+                                                   Foreground="#E2E8F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <Border CornerRadius="8" Visibility="{Binding IconVisibility}">
+                                        <Border.Background>
+                                            <ImageBrush ImageSource="{Binding CoverImage}" Stretch="UniformToFill"/>
+                                        </Border.Background>
+                                    </Border>
+                                </Grid>
+                            </Border>
+
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,4,0">
+                                <Border Style="{StaticResource StatusTag}" Background="{DynamicResource SupportGradient}"
+                                        ToolTip="{Binding AddedTooltip}" Visibility="{Binding NewBadgeVisibility}">
+                                    <TextBlock Text="{DynamicResource Loc_BadgeNew}" FontSize="10.5" Foreground="White" FontWeight="Bold"/>
+                                </Border>
+                                <Border Style="{StaticResource StatusTag}" Background="#26F59E0B"
+                                        ToolTip="{DynamicResource Loc_ManualFixHint}" Visibility="{Binding ManualFixVisibility}">
+                                    <TextBlock Text="{DynamicResource Loc_PillManualFix}" FontSize="10.5" Foreground="#FBBF24" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Style="{StaticResource StatusTag}" Background="#26EF4444"
+                                        Visibility="{Binding ExcludedBadgeVisibility}">
+                                    <TextBlock Text="{DynamicResource Loc_StateExcluded}" FontSize="10.5" Foreground="#FF8A8A" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Style="{StaticResource StatusTag}" Background="#338B5CF6"
+                                        ToolTip="{DynamicResource Loc_FilterCustomProfile}" Visibility="{Binding CustomProfileBadgeVisibility}">
+                                    <TextBlock Text="★ PRO" FontSize="10.5" Foreground="#C4B5FD" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </Border>
+                                <Border Style="{StaticResource IconChip}" Background="#17FFFFFF"
+                                        Visibility="{Binding AdaptiveVisibility}" ToolTip="{DynamicResource Loc_PillTriggers}">
+                                    <ContentControl Template="{StaticResource TriggerGlyph}" Width="18" Height="15" Focusable="False" IsTabStop="False" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                                </Border>
+                                <Border Style="{StaticResource IconChip}" Background="#17FFFFFF"
+                                        Visibility="{Binding HapticVisibility}" ToolTip="{DynamicResource Loc_PillHaptics}">
+                                    <Image Source="{StaticResource IconHaptic}" Width="17" Height="17"/>
+                                </Border>
+                            </StackPanel>
+
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding Title}" FontSize="14" Foreground="{DynamicResource TextPrimary}"
+                                           TextTrimming="CharacterEllipsis"/>
+                                <TextBlock Text="{Binding LastPlayedRelativeText}" FontSize="11" Foreground="#34D399"
+                                           Visibility="{Binding LastPlayedVisibility}" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </DataTemplate>
+
+            <!-- Game Card: Grid 8-Columns View Template -->
+            <DataTemplate x:Key="GameGridItemTemplate">
+                <Grid Margin="2,4" Cursor="Hand" ToolTip="{Binding Title}" MouseLeftButtonDown="OnGameCardClicked">
+                    <Border Style="{StaticResource FocusRing}" CornerRadius="12"
+                            Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}"/>
+                    <Border CornerRadius="8" BorderThickness="1.5" Height="108" Background="{DynamicResource CardBackground}">
+                        <Border.Style>
+                            <Style TargetType="Border">
+                                <Setter Property="BorderBrush" Value="Transparent"/>
+                                <Style.Triggers>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="BorderBrush" Value="{DynamicResource TileHoverBorder}"/>
+                                    </Trigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Border.Style>
+                        <Grid ClipToBounds="True">
+                            <Border Background="{Binding MonogramBackground}" CornerRadius="7" Visibility="{Binding PlaceholderVisibility}">
+                                <TextBlock Text="{Binding Initials}" FontSize="18" FontWeight="SemiBold"
+                                           Foreground="#E2E8F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                            <Border CornerRadius="7" Visibility="{Binding IconVisibility}">
+                                <Border.Background>
+                                    <ImageBrush ImageSource="{Binding CoverImage}" Stretch="UniformToFill"/>
+                                </Border.Background>
+                            </Border>
+                            <Border CornerRadius="0,0,7,7" Height="36" VerticalAlignment="Bottom" IsHitTestVisible="False">
+                                <Border.Background>
+                                    <LinearGradientBrush StartPoint="0,0" EndPoint="0,1">
+                                        <GradientStop Color="#00000000" Offset="0"/>
+                                        <GradientStop Color="#E6000000" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Border.Background>
+                            </Border>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,4,4,0">
+                                <Border Style="{StaticResource StatusTag}" Background="#338B5CF6" Padding="4,1" Margin="0"
+                                        Visibility="{Binding CustomProfileBadgeVisibility}">
+                                    <TextBlock Text="★" FontSize="9" Foreground="#C4B5FD" FontWeight="Bold"/>
+                                </Border>
+                                <Border Style="{StaticResource StatusTag}" Background="{DynamicResource SupportGradient}" Padding="4,1" Margin="3,0,0,0"
+                                        Visibility="{Binding NewBadgeVisibility}">
+                                    <TextBlock Text="{DynamicResource Loc_BadgeNew}" FontSize="8.5" Foreground="White" FontWeight="Bold"/>
+                                </Border>
+                            </StackPanel>
+                            <StackPanel VerticalAlignment="Bottom" Margin="4,0,4,3" IsHitTestVisible="False">
+                                <TextBlock Text="{Binding Title}" FontSize="9.5" FontWeight="SemiBold" Foreground="White"
+                                           TextTrimming="CharacterEllipsis" MaxHeight="14"/>
+                                <TextBlock Text="{Binding LastPlayedRelativeText}" FontSize="8.5" Foreground="#34D399"
+                                           Visibility="{Binding LastPlayedVisibility}" TextTrimming="CharacterEllipsis"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </Grid>
+            </DataTemplate>
         </ResourceDictionary>
     </Window.Resources>
 
@@ -27,24 +144,12 @@
 
 
         <Grid>
-            <!-- Ambient light: soft blue halos. -->
+            <!-- Ambient light: soft dynamic halos & custom wallpaper. -->
             <Grid x:Name="Backdrop" IsHitTestVisible="False" ClipToBounds="True">
-                <Rectangle>
-                    <Rectangle.Fill>
-                        <RadialGradientBrush Center="0.88,0" GradientOrigin="0.88,0" RadiusX="0.45" RadiusY="0.7">
-                            <GradientStop Color="#552A6BFF" Offset="0"/>
-                            <GradientStop Color="#002A6BFF" Offset="1"/>
-                        </RadialGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
-                <Rectangle>
-                    <Rectangle.Fill>
-                        <RadialGradientBrush Center="0,1" GradientOrigin="0,1" RadiusX="0.4" RadiusY="0.55">
-                            <GradientStop Color="#33163C9E" Offset="0"/>
-                            <GradientStop Color="#00163C9E" Offset="1"/>
-                        </RadialGradientBrush>
-                    </Rectangle.Fill>
-                </Rectangle>
+                <Image x:Name="ImgCustomBackdrop" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center" Visibility="Collapsed"/>
+                <Rectangle x:Name="RectCustomBackdropDimmer" Fill="#A604060E" Visibility="Collapsed"/>
+                <Rectangle Fill="{DynamicResource AmbientLightTopBrush}"/>
+                <Rectangle Fill="{DynamicResource AmbientLightBottomBrush}"/>
             </Grid>
 
             <Grid>
@@ -122,6 +227,13 @@
                         <StackPanel Orientation="Horizontal">
                             <TextBlock Text="{DynamicResource Loc_NavLearnedExecutables}"/>
                             <TextBlock x:Name="TxtNavLearnedCount" Text="0" FontSize="11" FontWeight="Normal"
+                                       Foreground="{DynamicResource TextMuted}" Margin="6,0,0,0" VerticalAlignment="Top"/>
+                        </StackPanel>
+                    </RadioButton>
+                    <RadioButton x:Name="NavTabHistory" Style="{StaticResource NavSegmentButton}" Checked="OnNavTabChanged">
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{DynamicResource Loc_NavHistory}"/>
+                            <TextBlock x:Name="TxtNavHistoryCount" Text="0" FontSize="11" FontWeight="Normal"
                                        Foreground="{DynamicResource TextMuted}" Margin="6,0,0,0" VerticalAlignment="Top"/>
                         </StackPanel>
                     </RadioButton>
@@ -404,9 +516,15 @@
                                                                     </LinearGradientBrush>
                                                                 </Border.Background>
                                                             </Border>
-                                                            <Border Style="{StaticResource NewBadge}" Margin="7,7,0,0" Visibility="{Binding NewBadgeVisibility}">
-                                                                <TextBlock Text="{DynamicResource Loc_BadgeNew}" Style="{StaticResource NewBadgeText}"/>
-                                                            </Border>
+                                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="7,7,0,0">
+                                                                <Border Background="#CC064E3B" CornerRadius="6" Padding="6,2" Margin="0,0,4,0"
+                                                                        Visibility="{Binding LastPlayedVisibility}">
+                                                                    <TextBlock Text="{Binding LastPlayedRelativeText}" FontSize="10" FontWeight="SemiBold" Foreground="#34D399"/>
+                                                                </Border>
+                                                                <Border Style="{StaticResource NewBadge}" Margin="0" Visibility="{Binding NewBadgeVisibility}">
+                                                                    <TextBlock Text="{DynamicResource Loc_BadgeNew}" Style="{StaticResource NewBadgeText}"/>
+                                                                </Border>
+                                                            </StackPanel>
                                                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,6,6">
                                                                 <Border Style="{StaticResource IconChip}" Visibility="{Binding AdaptiveVisibility}" ToolTip="{DynamicResource Loc_PillTriggers}">
                                                                     <ContentControl Template="{StaticResource TriggerGlyph}" Width="18" Height="15" Focusable="False" IsTabStop="False" VerticalAlignment="Center" HorizontalAlignment="Center"/>
@@ -478,14 +596,28 @@
                                 </Border>
 
                                 <DockPanel>
-                                    <TextBlock x:Name="TxtStats" Text="" FontSize="11.5"
-                                               Foreground="{DynamicResource TextMuted}" DockPanel.Dock="Right" VerticalAlignment="Center"/>
+                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                        <TextBlock x:Name="TxtStats" Text="" FontSize="11.5"
+                                                   Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center" Margin="0,0,12,0"/>
+                                        <Border CornerRadius="12" Background="#14FFFFFF" Padding="2" VerticalAlignment="Center">
+                                            <StackPanel Orientation="Horizontal">
+                                                <RadioButton x:Name="RadViewList" Content="☰" Style="{StaticResource FilterTabButton}"
+                                                             ToolTip="{DynamicResource Loc_ViewModeList}" Margin="0" MinWidth="26" Padding="6,2"
+                                                             IsChecked="True" Checked="OnViewModeChanged"/>
+                                                <RadioButton x:Name="RadViewGrid" Content="▦" Style="{StaticResource FilterTabButton}"
+                                                             ToolTip="{DynamicResource Loc_ViewModeGrid}" Margin="0" MinWidth="26" Padding="6,2"
+                                                             Checked="OnViewModeChanged"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </StackPanel>
                                     <StackPanel Orientation="Horizontal">
                                         <RadioButton x:Name="RadAll" Content="{DynamicResource Loc_TabAll}" Style="{StaticResource FilterTabButton}"
                                                      IsChecked="True" Checked="OnFilterTabChanged"/>
                                         <RadioButton x:Name="RadAdaptive" Content="{DynamicResource Loc_TabTriggers}" Style="{StaticResource FilterTabButton}"
                                                      Checked="OnFilterTabChanged"/>
                                         <RadioButton x:Name="RadHaptic" Content="{DynamicResource Loc_TabHaptics}" Style="{StaticResource FilterTabButton}"
+                                                     Checked="OnFilterTabChanged"/>
+                                        <RadioButton x:Name="RadCustomProfile" Content="{DynamicResource Loc_FilterCustomProfile}" Style="{StaticResource FilterTabButton}"
                                                      Checked="OnFilterTabChanged"/>
                                         <RadioButton x:Name="RadExcluded" Content="{DynamicResource Loc_TabExcluded}" Style="{StaticResource FilterTabButton}"
                                                      Checked="OnFilterTabChanged"/>
@@ -494,65 +626,40 @@
                             </StackPanel>
 
                             <ScrollViewer x:Name="ScrollCertified" Grid.Row="1" VerticalScrollBarVisibility="Auto" Focusable="False">
-                                <ItemsControl x:Name="LstGames" Margin="8,8,4,8">
-                                    <ItemsControl.ItemsPanel>
-                                        <ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate>
-                                    </ItemsControl.ItemsPanel>
-                                    <ItemsControl.ItemTemplate>
-                                        <DataTemplate>
-                                            <Grid Margin="0,0,10,8">
-                                            <Border Style="{StaticResource FocusRing}" CornerRadius="22"
-                                                    Visibility="{Binding IsSelected, Converter={StaticResource BoolToVisibility}}"/>
-                                            <Border Style="{StaticResource ConsoleCardItemStyle}"
-                                                    Opacity="{Binding CardOpacity}"
-                                                    MouseLeftButtonDown="OnGameCardClicked">
-                                                <DockPanel LastChildFill="True">
-                                                    <Border Width="38" Height="52" CornerRadius="8" ClipToBounds="True" Margin="0,0,14,0"
-                                                            VerticalAlignment="Center" DockPanel.Dock="Left">
-                                                        <Grid>
-                                                            <Border Background="{Binding MonogramBackground}" CornerRadius="8" Visibility="{Binding PlaceholderVisibility}">
-                                                                <TextBlock Text="{Binding Initials}" FontSize="12" FontWeight="SemiBold"
-                                                                           Foreground="#E2E8F0" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-                                                            </Border>
-                                                            <Border CornerRadius="8" Visibility="{Binding IconVisibility}">
-                                                                <Border.Background>
-                                                                    <ImageBrush ImageSource="{Binding CoverImage}" Stretch="UniformToFill"/>
-                                                                </Border.Background>
-                                                            </Border>
-                                                        </Grid>
-                                                    </Border>
+                                <StackPanel Margin="8,8,4,8">
+                                    <!-- 1. RECENTLY PLAYED SECTION -->
+                                    <StackPanel x:Name="PnlRecentlyPlayedSection" Visibility="Collapsed" Margin="0,0,0,16">
+                                        <TextBlock Text="{DynamicResource Loc_RecentlyPlayedTitle}" FontSize="13.5" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextPrimary}" Margin="4,0,0,8"/>
+                                        <ItemsControl x:Name="LstRecentlyPlayedList" ItemTemplate="{StaticResource GameListItemTemplate}" Visibility="Visible">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                        <ItemsControl x:Name="LstRecentlyPlayedGrid" ItemTemplate="{StaticResource GameGridItemTemplate}" Visibility="Collapsed">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate><UniformGrid Columns="8"/></ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </StackPanel>
 
-                                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="8,0,4,0">
-                                                        <Border Style="{StaticResource StatusTag}" Background="{DynamicResource SupportGradient}"
-                                                                ToolTip="{Binding AddedTooltip}" Visibility="{Binding NewBadgeVisibility}">
-                                                            <TextBlock Text="{DynamicResource Loc_BadgeNew}" FontSize="10.5" Foreground="White" FontWeight="Bold"/>
-                                                        </Border>
-                                                        <Border Style="{StaticResource StatusTag}" Background="#26F59E0B"
-                                                                ToolTip="{DynamicResource Loc_ManualFixHint}" Visibility="{Binding ManualFixVisibility}">
-                                                            <TextBlock Text="{DynamicResource Loc_PillManualFix}" FontSize="10.5" Foreground="#FBBF24" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                        <Border Style="{StaticResource StatusTag}" Background="#26EF4444"
-                                                                Visibility="{Binding ExcludedBadgeVisibility}">
-                                                            <TextBlock Text="{DynamicResource Loc_StateExcluded}" FontSize="10.5" Foreground="#FF8A8A" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                                                        </Border>
-                                                        <Border Style="{StaticResource IconChip}" Background="#17FFFFFF"
-                                                                Visibility="{Binding AdaptiveVisibility}" ToolTip="{DynamicResource Loc_PillTriggers}">
-                                                            <ContentControl Template="{StaticResource TriggerGlyph}" Width="18" Height="15" Focusable="False" IsTabStop="False" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-                                                        </Border>
-                                                        <Border Style="{StaticResource IconChip}" Background="#17FFFFFF"
-                                                                Visibility="{Binding HapticVisibility}" ToolTip="{DynamicResource Loc_PillHaptics}">
-                                                            <Image Source="{StaticResource IconHaptic}" Width="17" Height="17"/>
-                                                        </Border>
-                                                    </StackPanel>
-
-                                                    <TextBlock Text="{Binding Title}" FontSize="14" Foreground="{DynamicResource TextPrimary}"
-                                                               TextTrimming="CharacterEllipsis" VerticalAlignment="Center"/>
-                                                </DockPanel>
-                                            </Border>
-                                            </Grid>
-                                        </DataTemplate>
-                                    </ItemsControl.ItemTemplate>
-                                </ItemsControl>
+                                    <!-- 2. ALL GAMES SECTION -->
+                                    <StackPanel x:Name="PnlAllGamesSection">
+                                        <TextBlock x:Name="TxtAllGamesSectionTitle" Text="{DynamicResource Loc_AllGamesTitle}"
+                                                   FontSize="13.5" FontWeight="SemiBold" Foreground="{DynamicResource TextPrimary}"
+                                                   Margin="4,0,0,8" Visibility="Collapsed"/>
+                                        <ItemsControl x:Name="LstGames" ItemTemplate="{StaticResource GameListItemTemplate}" Visibility="Visible">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate><StackPanel/></ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                        <ItemsControl x:Name="LstGamesGrid" ItemTemplate="{StaticResource GameGridItemTemplate}" Visibility="Collapsed">
+                                            <ItemsControl.ItemsPanel>
+                                                <ItemsPanelTemplate><UniformGrid Columns="8"/></ItemsPanelTemplate>
+                                            </ItemsControl.ItemsPanel>
+                                        </ItemsControl>
+                                    </StackPanel>
+                                </StackPanel>
                             </ScrollViewer>
                         </Grid>
 
@@ -650,6 +757,59 @@
                                                            FontSize="12.5" VerticalAlignment="Center"/>
                                             </StackPanel>
                                         </Button>
+
+                                        <!-- Per-Game Profile Calibration -->
+                                        <Border CornerRadius="16" Background="#0DFFFFFF" BorderBrush="#1AFFFFFF" BorderThickness="1" Padding="14,12" Margin="0,0,0,16">
+                                            <StackPanel>
+                                                <DockPanel Margin="0,0,0,10">
+                                                    <Border x:Name="BadgeGameProfileStatus" CornerRadius="8" Padding="8,3" Background="#263B82F6" DockPanel.Dock="Right" VerticalAlignment="Center">
+                                                        <TextBlock x:Name="TxtGameProfileStatus" Text="{DynamicResource Loc_GameProfileDefault}" FontSize="10.5" Foreground="#60A5FA" FontWeight="SemiBold"/>
+                                                    </Border>
+                                                    <TextBlock Text="{DynamicResource Loc_GameProfileTitle}" FontSize="12.5" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center"/>
+                                                </DockPanel>
+
+                                                <TextBlock Text="{DynamicResource Loc_GameProfileHint}" FontSize="10.5" Foreground="{DynamicResource TextMuted}" TextWrapping="Wrap" Margin="0,0,0,8"/>
+
+                                                <!-- Preset Templates -->
+                                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                                    <TextBlock Text="Preset:" FontSize="10.5" Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                                    <Button x:Name="BtnPresetSubtle" Content="{DynamicResource Loc_PresetSubtle}" Style="{StaticResource BtnSecondary}"
+                                                            Padding="8,2" FontSize="10" Margin="0,0,6,0" Click="OnPresetSubtleClick"/>
+                                                    <Button x:Name="BtnPresetBalanced" Content="{DynamicResource Loc_PresetBalanced}" Style="{StaticResource BtnSecondary}"
+                                                            Padding="8,2" FontSize="10" Margin="0,0,6,0" Click="OnPresetBalancedClick"/>
+                                                    <Button x:Name="BtnPresetIntense" Content="{DynamicResource Loc_PresetIntense}" Style="{StaticResource BtnSecondary}"
+                                                            Padding="8,2" FontSize="10" Margin="0,0,6,0" Click="OnPresetIntenseClick"/>
+                                                </StackPanel>
+
+                                                <!-- Trigger Strength Slider -->
+                                                <DockPanel Margin="0,0,0,8">
+                                                    <TextBlock x:Name="TxtProfileTriggerVal" Text="100%" Width="42" TextAlignment="Right" DockPanel.Dock="Right" FontSize="11" Foreground="White" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{DynamicResource Loc_PillTriggers}" FontSize="11" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                                    <Slider x:Name="SldProfileTrigger" Minimum="0" Maximum="100" Value="100" VerticalAlignment="Center" ValueChanged="OnProfileTriggerChanged"/>
+                                                </DockPanel>
+
+                                                <!-- Vibration Strength Slider -->
+                                                <DockPanel Margin="0,0,0,8">
+                                                    <TextBlock x:Name="TxtProfileVibrationVal" Text="100%" Width="42" TextAlignment="Right" DockPanel.Dock="Right" FontSize="11" Foreground="White" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{DynamicResource Loc_PillHaptics}" FontSize="11" Foreground="{DynamicResource TextSecondary}" VerticalAlignment="Center" Margin="0,0,8,0"/>
+                                                    <Slider x:Name="SldProfileVibration" Minimum="0" Maximum="200" Value="100" VerticalAlignment="Center" ValueChanged="OnProfileVibrationChanged"/>
+                                                </DockPanel>
+
+                                                <!-- Buttons: Export, Import, Test Vibration, Reset & Save -->
+                                                <WrapPanel HorizontalAlignment="Right" Margin="0,6,0,0">
+                                                    <Button x:Name="BtnProfileExport" Content="{DynamicResource Loc_ExportProfile}" Style="{StaticResource BtnSecondary}"
+                                                            Padding="8,4" FontSize="10" Margin="0,0,6,4" Click="OnProfileExportClick"/>
+                                                    <Button x:Name="BtnProfileImport" Content="{DynamicResource Loc_ImportProfile}" Style="{StaticResource BtnSecondary}"
+                                                            Padding="8,4" FontSize="10" Margin="0,0,6,4" Click="OnProfileImportClick"/>
+                                                    <Button x:Name="BtnProfileTestVibration" Content="{DynamicResource Loc_TestVibration}" Style="{StaticResource BtnSecondary}"
+                                                            Padding="8,4" FontSize="10" Margin="0,0,6,4" Click="OnProfileTestVibrationClick"/>
+                                                    <Button x:Name="BtnProfileReset" Content="{DynamicResource Loc_GameProfileReset}" Style="{StaticResource BtnSecondary}"
+                                                            Padding="8,4" FontSize="10" Margin="0,0,6,4" Click="OnProfileResetClick"/>
+                                                    <Button x:Name="BtnProfileSave" Content="{DynamicResource Loc_GameProfileSave}" Style="{StaticResource BtnPrimary}"
+                                                            Padding="12,4" FontSize="10.5" Margin="0,0,0,4" Click="OnProfileSaveClick"/>
+                                                </WrapPanel>
+                                            </StackPanel>
+                                        </Border>
 
                                         <!-- Advanced: optional executable association -->
                                         <TextBlock Text="{DynamicResource Loc_GameExecutable}" ToolTip="{DynamicResource Loc_GameExecutableHint}"
@@ -793,6 +953,89 @@
                         </ScrollViewer>
                     </Grid>
 
+                    <!-- ────────── TAB : SESSION HISTORY ────────── -->
+                    <Grid x:Name="PanelHistory" Visibility="Collapsed" Margin="26,0,26,4">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+
+                        <!-- Top stats bar -->
+                        <Grid Grid.Row="0" Margin="0,0,0,14">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="14"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="14"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+
+                            <Border Grid.Column="0" Style="{StaticResource ConsoleTile}">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock x:Name="TxtHistoryTotalTime" Text="0h 00m" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                                    <TextBlock Text="{DynamicResource Loc_SessionHistoryTotal}" FontSize="12" Foreground="{DynamicResource TextSecondary}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="2" Style="{StaticResource ConsoleTile}">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock x:Name="TxtHistorySessionCount" Text="0" FontSize="22" FontWeight="SemiBold" Foreground="White"/>
+                                    <TextBlock Text="{DynamicResource Loc_SessionHistoryCount}" FontSize="12" Foreground="{DynamicResource TextSecondary}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Border Grid.Column="4" Style="{StaticResource ConsoleTile}">
+                                <StackPanel VerticalAlignment="Center">
+                                    <TextBlock x:Name="TxtHistoryTopGame" Text="—" FontSize="15" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                    <TextBlock Text="{DynamicResource Loc_SessionHistoryTopGames}" FontSize="12" Foreground="{DynamicResource TextSecondary}"/>
+                                </StackPanel>
+                            </Border>
+
+                            <Button Grid.Column="5" Content="{DynamicResource Loc_SessionHistoryClear}" Style="{StaticResource BtnDanger}"
+                                    VerticalAlignment="Center" Margin="14,0,0,0" Padding="14,10"
+                                    Click="OnClearHistoryClick"/>
+                        </Grid>
+
+                        <!-- Session records list -->
+                        <ScrollViewer x:Name="ScrollHistory" Grid.Row="1" VerticalScrollBarVisibility="Auto" Focusable="False">
+                            <Grid>
+                                <ItemsControl x:Name="LstHistory" Margin="4,4,4,8">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Border CornerRadius="12" Background="#14FFFFFF" Margin="0,0,0,8" Padding="16,12">
+                                                <DockPanel LastChildFill="True">
+                                                    <Border DockPanel.Dock="Right" CornerRadius="8" Padding="10,4" VerticalAlignment="Center"
+                                                            Background="{Binding StatusBadgeBackground}">
+                                                        <TextBlock Text="{Binding StatusText}" FontSize="11" FontWeight="SemiBold"
+                                                                   Foreground="{Binding StatusBadgeForeground}"/>
+                                                    </Border>
+                                                    <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,18,0">
+                                                        <TextBlock Text="{Binding DurationDisplay}" FontSize="13" FontWeight="SemiBold" Foreground="White" VerticalAlignment="Center" Margin="0,0,16,0"/>
+                                                        <TextBlock Text="{Binding ControllerDisplay}" FontSize="11.5" Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center"/>
+                                                    </StackPanel>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding GameTitle}" FontSize="14" FontWeight="SemiBold" Foreground="White" TextTrimming="CharacterEllipsis"/>
+                                                        <TextBlock Text="{Binding StartedDisplay}" FontSize="11" Foreground="{DynamicResource TextMuted}" Margin="0,2,0,0"/>
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+
+                                <StackPanel x:Name="PnlHistoryEmpty" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                            Margin="20,60" Visibility="Collapsed">
+                                    <Border Width="64" Height="64" CornerRadius="32" Background="#14FFFFFF" HorizontalAlignment="Center" Margin="0,0,0,14">
+                                        <TextBlock Text="⏱" FontSize="26" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                    </Border>
+                                    <TextBlock Text="{DynamicResource Loc_SessionHistoryEmpty}" FontSize="14" Foreground="{DynamicResource TextMuted}"
+                                               HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="360"/>
+                                </StackPanel>
+                            </Grid>
+                        </ScrollViewer>
+                    </Grid>
+
                     <!-- ────────── TAB 3 : SETTINGS ────────── -->
                     <ScrollViewer x:Name="ScrollSettings" Visibility="Collapsed" VerticalScrollBarVisibility="Auto"
                                   Padding="26,0,26,4" Focusable="False">
@@ -890,6 +1133,83 @@
                                     </StackPanel>
                                 </Border>
 
+                                <!-- Theme Presets & Custom Palette Selection -->
+                                <Border Style="{StaticResource SectionCard}">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Loc_ThemeTitle}" Style="{StaticResource SectionTitle}"/>
+                                        <WrapPanel Orientation="Horizontal" Margin="0,4,0,8">
+                                            <RadioButton x:Name="ConsoleRadThemePS" Content="🔵 PlayStation" Style="{StaticResource LangOptionButton}"
+                                                         Margin="0,0,6,6" Checked="OnConsoleThemeChecked"/>
+                                            <RadioButton x:Name="ConsoleRadThemeXbox" Content="🟢 Xbox Viper" Style="{StaticResource LangOptionButton}"
+                                                         Margin="0,0,6,6" Checked="OnConsoleThemeChecked"/>
+                                            <RadioButton x:Name="ConsoleRadThemeCyber" Content="🟣 Cyberpunk" Style="{StaticResource LangOptionButton}"
+                                                         Margin="0,0,6,6" Checked="OnConsoleThemeChecked"/>
+                                            <RadioButton x:Name="ConsoleRadThemeOled" Content="⚫ OLED Black" Style="{StaticResource LangOptionButton}"
+                                                         Margin="0,0,6,6" Checked="OnConsoleThemeChecked"/>
+                                            <RadioButton x:Name="ConsoleRadThemeLight" Content="⚪ Clean Light" Style="{StaticResource LangOptionButton}"
+                                                         Margin="0,0,6,6" Checked="OnConsoleThemeChecked"/>
+                                            <RadioButton x:Name="ConsoleRadThemeSystem" Content="💻 Theo Windows" Style="{StaticResource LangOptionButton}"
+                                                         Margin="0,0,6,6" Checked="OnConsoleThemeChecked"/>
+                                        </WrapPanel>
+
+                                        <!-- Custom Accent Swatches -->
+                                        <TextBlock Text="{DynamicResource Loc_CustomAccentTitle}" FontSize="11.5" FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource TextMuted}" Margin="2,4,0,6"/>
+                                        <WrapPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,0,2">
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#E11D48" ToolTip="Crimson Red" Tag="#E11D48" Click="OnQuickColorSwatchClick"/>
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#F97316" ToolTip="Sunset Orange" Tag="#F97316" Click="OnQuickColorSwatchClick"/>
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#F59E0B" ToolTip="Amber Gold" Tag="#F59E0B" Click="OnQuickColorSwatchClick"/>
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#10B981" ToolTip="Emerald Green" Tag="#10B981" Click="OnQuickColorSwatchClick"/>
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#0070D1" ToolTip="PlayStation Blue" Tag="#0070D1" Click="OnQuickColorSwatchClick"/>
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#8B5CF6" ToolTip="Neon Violet" Tag="#8B5CF6" Click="OnQuickColorSwatchClick"/>
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#EC4899" ToolTip="Hot Pink" Tag="#EC4899" Click="OnQuickColorSwatchClick"/>
+                                            <Button Style="{StaticResource ColorCircleButton}" Background="#94A3B8" ToolTip="Silver Slate" Tag="#94A3B8" Click="OnQuickColorSwatchClick"/>
+                                            <Button x:Name="BtnPickCustomAccent" Style="{StaticResource BtnSecondary}" Padding="10,0" MinHeight="26"
+                                                    FontSize="11" Margin="4,0,0,6" VerticalAlignment="Center" Click="OnPickCustomAccentClick">
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="🎨 " FontSize="11" VerticalAlignment="Center"/>
+                                                    <TextBlock Text="{DynamicResource Loc_CustomAccentMore}" VerticalAlignment="Center"/>
+                                                </StackPanel>
+                                            </Button>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Custom Background Wallpaper -->
+                                <Border Style="{StaticResource SectionCard}">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Loc_WallpaperTitle}" Style="{StaticResource SectionTitle}"/>
+                                        <TextBlock Text="{DynamicResource Loc_WallpaperHint}" FontSize="11.5" Foreground="{DynamicResource TextSecondary}"
+                                                   TextWrapping="Wrap" Margin="4,0,0,10"/>
+                                        <DockPanel LastChildFill="True">
+                                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button x:Name="BtnBrowseWallpaper" Content="{DynamicResource Loc_WallpaperBrowse}" Style="{StaticResource BtnPrimary}"
+                                                        Padding="12,6" FontSize="11.5" Margin="0,0,8,0" Click="OnBrowseWallpaperClick"/>
+                                                <Button x:Name="BtnRemoveWallpaper" Content="{DynamicResource Loc_WallpaperRemove}" Style="{StaticResource BtnDanger}"
+                                                        Padding="10,6" FontSize="11.5" Visibility="Collapsed" Click="OnRemoveWallpaperClick"/>
+                                            </StackPanel>
+                                            <TextBlock x:Name="TxtWallpaperStatus" Text="{DynamicResource Loc_WallpaperDefault}"
+                                                       FontSize="12" Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center"
+                                                       TextTrimming="CharacterEllipsis" Margin="4,0,12,0"/>
+                                        </DockPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Profiles Backup & Restore -->
+                                <Border Style="{StaticResource SectionCard}">
+                                    <StackPanel>
+                                        <TextBlock Text="{DynamicResource Loc_GameProfileTitle}" Style="{StaticResource SectionTitle}"/>
+                                        <TextBlock Text="{DynamicResource Loc_GameProfileHint}" FontSize="11.5" Foreground="{DynamicResource TextSecondary}"
+                                                   TextWrapping="Wrap" Margin="4,0,0,10"/>
+                                        <WrapPanel Margin="0,0,0,4">
+                                            <Button x:Name="BtnBackupAllProfiles" Content="{DynamicResource Loc_BackupAllProfiles}" Style="{StaticResource BtnSecondary}"
+                                                    Margin="0,0,8,8" Click="OnBackupAllProfilesClick"/>
+                                            <Button x:Name="BtnRestoreAllProfiles" Content="{DynamicResource Loc_RestoreAllProfiles}" Style="{StaticResource BtnSecondary}"
+                                                    Margin="0,0,8,8" Click="OnRestoreAllProfilesClick"/>
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Border>
+
                                 <Border Style="{StaticResource SectionCard}">
                                     <StackPanel>
                                         <TextBlock Text="{DynamicResource Loc_SectionControllerDiagnostic}" Style="{StaticResource SectionTitle}"/>
@@ -968,6 +1288,8 @@
                                             <Border x:Name="RowVibrationStrength" Style="{StaticResource SettingRow}" ToolTip="{DynamicResource Loc_VibrationStrengthHint}">
                                                 <StackPanel>
                                                     <DockPanel>
+                                                        <Button x:Name="BtnTestControllerVibration" Content="{DynamicResource Loc_TestVibration}" Style="{StaticResource BtnSecondary}"
+                                                                Padding="8,2" FontSize="10.5" DockPanel.Dock="Right" Margin="8,0,0,0" Click="OnTestControllerVibrationClick"/>
                                                         <TextBlock x:Name="TxtVibrationStrength" DockPanel.Dock="Right" Style="{StaticResource ValueLabel}"/>
                                                         <TextBlock Text="{DynamicResource Loc_VibrationStrength}" Style="{StaticResource RowLabel}"/>
                                                     </DockPanel>
@@ -1103,6 +1425,22 @@
                         </StackPanel>
                     </StackPanel>
                 </Border>
-            </Grid>        </Grid>
+            </Grid>
+
+            <!-- In-App Floating Toast Notification (Console UX) -->
+            <Border x:Name="ToastNotification" HorizontalAlignment="Center" VerticalAlignment="Top"
+                    Margin="0,22,0,0" CornerRadius="18" Padding="20,10" Opacity="0" IsHitTestVisible="False"
+                    Background="{DynamicResource CardBackground}" BorderBrush="{DynamicResource PlayStationBlue}" BorderThickness="1.5">
+                <Border.Effect>
+                    <DropShadowEffect BlurRadius="26" ShadowDepth="4" Direction="270" Color="#000000" Opacity="0.8"/>
+                </Border.Effect>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock x:Name="IconToastStatus" Text="✓" FontSize="14" FontWeight="Bold"
+                               Foreground="#34D399" Margin="0,0,10,0" VerticalAlignment="Center"/>
+                    <TextBlock x:Name="TxtToastMessage" Text="Notification" FontSize="12.5" FontWeight="Medium"
+                               Foreground="{DynamicResource TextPrimary}" VerticalAlignment="Center"/>
+                </StackPanel>
+            </Border>
+        </Grid>
     </Border>
 </Window>

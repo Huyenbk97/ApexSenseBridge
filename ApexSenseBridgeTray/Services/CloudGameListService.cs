@@ -49,26 +49,46 @@ namespace ApexSenseBridgeTray.Services
             }
         }
 
+        public int LoadedVersion { get; private set; } = 0;
+
         public void Initialize()
         {
+            // Luôn nạp embedded database trước để đảm bảo có cơ sở dữ liệu mới nhất
+            LoadEmbeddedDatabase();
+            int embeddedVersion = LoadedVersion;
+
             try
             {
                 var cachePath = LocalCachePath;
                 if (File.Exists(cachePath))
                 {
                     var json = File.ReadAllText(cachePath, Encoding.UTF8);
-                    if (ParseAndLoadJson(json))
+                    int cacheVersion = PeekVersion(json);
+                    if (cacheVersion >= embeddedVersion && ParseAndLoadJson(json))
                     {
                         LastUpdated = File.GetLastWriteTimeUtc(cachePath);
                         return;
+                    }
+                    else
+                    {
+                        // Cache cũ hơn bản embedded (ví dụ cache v1 thiếu ảnh bìa), ghi đè đồng bộ bản mới
+                        try
+                        {
+                            var embeddedJson = GetEmbeddedJson();
+                            if (!string.IsNullOrEmpty(embeddedJson))
+                            {
+                                var dir = Path.GetDirectoryName(cachePath);
+                                if (!Directory.Exists(dir)) Directory.CreateDirectory(dir);
+                                File.WriteAllText(cachePath, embeddedJson, Encoding.UTF8);
+                            }
+                        }
+                        catch { }
                     }
                 }
             }
             catch
             {
             }
-
-            LoadEmbeddedDatabase();
         }
 
         public async Task<bool> FetchLatestFromCloudAsync()
@@ -348,6 +368,14 @@ namespace ApexSenseBridgeTray.Services
                     // Publish only after every entry and collision has been validated.
                     gamesByExecutableName = parsedByExecutableName;
                 }
+
+                int parsedVer = 1;
+                if (dict.ContainsKey("version") && dict["version"] != null)
+                {
+                    int.TryParse(dict["version"].ToString(), out parsedVer);
+                }
+                LoadedVersion = parsedVer;
+
                 return true;
             }
             catch
@@ -491,6 +519,41 @@ namespace ApexSenseBridgeTray.Services
                 }
             }
             return sb.ToString();
+        }
+
+        private static int PeekVersion(string json)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(json)) return 0;
+                var serializer = new JavaScriptSerializer();
+                var dict = serializer.Deserialize<Dictionary<string, object>>(json);
+                if (dict != null && dict.ContainsKey("version") && dict["version"] != null)
+                {
+                    int v;
+                    if (int.TryParse(dict["version"].ToString(), out v)) return v;
+                }
+            }
+            catch { }
+            return 0;
+        }
+
+        private static string GetEmbeddedJson()
+        {
+            try
+            {
+                var assembly = Assembly.GetExecutingAssembly();
+                using (var stream = assembly.GetManifestResourceStream("ApexSenseBridgeTray.supported_games.json"))
+                {
+                    if (stream == null) return null;
+                    using (var reader = new StreamReader(stream, Encoding.UTF8))
+                    {
+                        return reader.ReadToEnd();
+                    }
+                }
+            }
+            catch { }
+            return null;
         }
     }
 }

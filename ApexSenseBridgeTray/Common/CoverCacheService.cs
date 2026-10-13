@@ -30,6 +30,7 @@ namespace ApexSenseBridgeTray.Common
                 {
                     Directory.CreateDirectory(CacheDir);
                 }
+                HttpClient.DefaultRequestHeaders.TryAddWithoutValidation("User-Agent", "Mozilla/5.0 (Windows NT 10.0; Win64; x64) ApexSenseBridgeTray/1.0");
             }
             catch { }
         }
@@ -70,12 +71,33 @@ namespace ApexSenseBridgeTray.Common
                 catch { }
             }
 
+            // 2b. Check application bundled covers directory (assets/covers/)
+            try
+            {
+                string appDir = AppDomain.CurrentDomain.BaseDirectory;
+                string bundledCoversDir = Path.Combine(appDir, "assets", "covers");
+                if (Directory.Exists(bundledCoversDir))
+                {
+                    string bundledPath = Path.Combine(bundledCoversDir, fileName);
+                    if (File.Exists(bundledPath))
+                    {
+                        var bmp = LoadBitmapFromFile(bundledPath);
+                        if (bmp != null)
+                        {
+                            MemoryCache[url] = bmp;
+                            return bmp;
+                        }
+                    }
+                }
+            }
+            catch { }
+
             // 3. Download in background if not found locally
             Task.Run(async () =>
             {
                 try
                 {
-                    byte[] data = await HttpClient.GetByteArrayAsync(url);
+                    byte[] data = await DownloadCoverBytesAsync(url);
                     if (data != null && data.Length > 200)
                     {
                         try
@@ -108,17 +130,36 @@ namespace ApexSenseBridgeTray.Common
             return null;
         }
 
+        private static async Task<byte[]> DownloadCoverBytesAsync(string url)
+        {
+            try
+            {
+                var data = await HttpClient.GetByteArrayAsync(url);
+                if (data != null && data.Length > 200) return data;
+            }
+            catch
+            {
+                // Fallback nếu Steam CDN library_600x900_2x.jpg gặp sự cố
+                if (url.Contains("/library_600x900_2x.jpg"))
+                {
+                    var altUrl = url.Replace("/library_600x900_2x.jpg", "/header.jpg");
+                    try
+                    {
+                        var altData = await HttpClient.GetByteArrayAsync(altUrl);
+                        if (altData != null && altData.Length > 200) return altData;
+                    }
+                    catch { }
+                }
+            }
+            return null;
+        }
+
         private static BitmapSource LoadBitmapFromFile(string path)
         {
             try
             {
-                var bmp = new BitmapImage();
-                bmp.BeginInit();
-                bmp.CacheOption = BitmapCacheOption.OnLoad;
-                bmp.UriSource = new Uri(path, UriKind.Absolute);
-                bmp.EndInit();
-                bmp.Freeze();
-                return bmp;
+                var bytes = File.ReadAllBytes(path);
+                return LoadBitmapFromBytes(bytes);
             }
             catch
             {

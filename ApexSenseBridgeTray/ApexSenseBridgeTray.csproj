@@ -109,6 +109,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Models\LearnedExecutableBinding.cs" />
+    <Compile Include="Models\GameProfile.cs" />
+    <Compile Include="Models\SessionRecord.cs" />
     <Compile Include="Models\SupportedGame.cs" />
     <Compile Include="Models\TraySettings.cs" />
     <Compile Include="Services\CloudGameListService.cs" />
@@ -124,6 +126,8 @@
     <Compile Include="Services\SessionRecoveryState.cs" />
     <Compile Include="Services\SteamProcessChecker.cs" />
     <Compile Include="Services\UpdateCheckerService.cs" />
+    <Compile Include="Services\GameProfileService.cs" />
+    <Compile Include="Services\SessionHistoryService.cs" />
     <Compile Include="..\shared\ReleaseSecurity.cs">
       <Link>Common\ReleaseSecurity.cs</Link>
     </Compile>
@@ -166,6 +170,14 @@
     <EmbeddedResource Include="..\data\supported_games.json">
       <Link>supported_games.json</Link>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\assets\covers\**\*">
+      <Link>assets\covers\%(RecursiveDir)%(FileName)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
     <EmbeddedResource Include="Resources\Languages\en.json" />
     <EmbeddedResource Include="Resources\Languages\es.json" />
     <EmbeddedResource Include="Resources\Languages\fr.json" />

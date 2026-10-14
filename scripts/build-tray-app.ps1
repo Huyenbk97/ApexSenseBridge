@@ -50,20 +50,14 @@ if (-not $msbuild) {
     }
 }
 
-$extraProps = @()
-$localRoslyn = Join-Path $root "tools\roslyn"
-if (Test-Path (Join-Path $localRoslyn "csc.exe")) {
-    $extraProps += "/p:CscToolPath=$localRoslyn"
-}
-
 Write-Host "Building ApexSenseBridgeTray application..."
-& $msbuild $project /t:Rebuild /p:Configuration=Release @extraProps
+& $msbuild $project /t:Rebuild /p:Configuration=Release
 if ($LASTEXITCODE -ne 0) {
     Fail "ApexSenseBridgeTray compilation failed."
 }
 
 Write-Host "Running executable-learning regression tests..."
-& $msbuild $learningTestProject /t:Rebuild /p:Configuration=Release @extraProps
+& $msbuild $learningTestProject /t:Rebuild /p:Configuration=Release
 if ($LASTEXITCODE -ne 0) {
     Fail "Executable-learning test compilation failed."
 }

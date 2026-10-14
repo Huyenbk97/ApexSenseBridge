@@ -1,6 +1,6 @@
 {
-  "version": 2,
-  "updatedAt": "2026-10-13T08:00:00Z",
+  "version": 1,
+  "updatedAt": "2026-10-12T11:42:22.874632+00:00",
   "totalGames": 220,
   "discordExecutableGames": 132,
   "games": [
@@ -48,7 +48,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202305/2420/c3daf3037feb797d9e71b81618e3b5ff3ff1f9609db5a4a2.png",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -385,9 +385,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1938090,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1938090/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -427,9 +427,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1938090,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1938090/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -480,9 +480,9 @@
       "hapticFeedback": false,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/Control",
       "profile": "standard",
-      "steamAppId": 870780,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/870780/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -517,9 +517,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": false,
       "profile": "standard",
-      "steamAppId": 3321460,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/3321460/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -622,9 +622,9 @@
       "hapticFeedback": false,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/Death_Stranding",
       "profile": "standard",
-      "steamAppId": 1850570,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1850570/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -673,9 +673,9 @@
       "adaptiveTriggers": false,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1477070,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1477070/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -686,9 +686,9 @@
       "hapticFeedback": false,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/DiRT_4",
       "profile": "standard",
-      "steamAppId": 421020,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/421020/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -700,9 +700,9 @@
       "hapticFeedback": false,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/DiRT_Rally",
       "profile": "standard",
-      "steamAppId": 310560,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/310560/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -789,9 +789,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 534380,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/534380/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -870,9 +870,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": false,
       "profile": "standard",
-      "steamAppId": 1134570,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1134570/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -881,9 +881,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1692250,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1692250/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -892,9 +892,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 2108330,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2108330/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1015,9 +1015,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 39210,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/39210/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1041,9 +1041,9 @@
       "adaptiveTriggers": false,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1298140,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1298140/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1068,9 +1068,9 @@
       "hapticFeedback": false,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/Forza_Horizon_4",
       "profile": "standard",
-      "steamAppId": 1293830,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1293830/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-12"
     },
@@ -1115,7 +1115,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://media.rawg.io/media/games/2ff/2ffc64e3c5569e29627aeb8b8637d693.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -1140,7 +1140,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://image.api.playstation.com/vulcan/ap/rnd/202607/2403/e7e7bde9969f39001da772da8085fb99d9301e53525e4370.png",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -1250,9 +1250,9 @@
       "hapticFeedback": false,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/Grand_Theft_Auto:_San_Andreas",
       "profile": "standard",
-      "steamAppId": 1547000,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1547000/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -1388,9 +1388,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 2420110,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2420110/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1443,7 +1443,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://image.api.playstation.com/vulcan/img/rnd/202011/0612/RzFDt2BSPz8Kzz3YMgKKRNAP.png",
+      "iconUrl": "",
       "addedAt": "2026-09-12"
     },
     {
@@ -1454,7 +1454,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://image.api.playstation.com/vulcan/img/rnd/202011/0613/TkAL6qfnoJfeV5G7Gt5Y1HFy.png",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1510,9 +1510,9 @@
       "adaptiveTriggers": false,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1501750,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1501750/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1549,9 +1549,9 @@
       "adaptiveTriggers": false,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 3065800,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/3065800/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1706,9 +1706,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 412020,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/412020/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1797,7 +1797,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://media.rawg.io/media/screenshots/ece/ece3b4d7546e3aaf12e164e5d2059c97.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1878,9 +1878,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": false,
       "profile": "standard",
-      "steamAppId": 2357570,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2357570/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -1891,7 +1891,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://media.rawg.io/media/games/5ad/5adbec1ab1b6390835a3bc936b96091f.jpg",
+      "iconUrl": "",
       "addedAt": "2026-10-11"
     },
     {
@@ -1914,9 +1914,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 214870,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/214870/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2073,9 +2073,9 @@
       "adaptiveTriggers": false,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1712350,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1712350/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2100,9 +2100,9 @@
       "hapticFeedback": false,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/Rocket_League",
       "profile": "standard",
-      "steamAppId": 252950,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/252950/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -2203,9 +2203,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 697580,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/697580/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2214,9 +2214,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 1172620,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1172620/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2661,9 +2661,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": true,
       "profile": "standard",
-      "steamAppId": 292030,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/292030/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2706,9 +2706,9 @@
       "hapticFeedbackManualFix": true,
       "manualFixUrl": "https://www.pcgamingwiki.com/wiki/Tomb_Raider_(2013)",
       "profile": "standard",
-      "steamAppId": 203160,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/203160/library_600x900_2x.jpg",
+      "iconUrl": "",
       "requiresManualFix": true,
       "addedAt": "2026-09-01"
     },
@@ -2718,9 +2718,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": false,
       "profile": "standard",
-      "steamAppId": 2395210,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2395210/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2825,9 +2825,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": false,
       "profile": "standard",
-      "steamAppId": 2183900,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/2183900/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2876,9 +2876,9 @@
       "adaptiveTriggers": true,
       "hapticFeedback": false,
       "profile": "standard",
-      "steamAppId": 1953520,
+      "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://cdn.cloudflare.steamstatic.com/steam/apps/1953520/library_600x900_2x.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {
@@ -2904,7 +2904,7 @@
       "profile": "standard",
       "steamAppId": 0,
       "steamAppIdVerified": false,
-      "iconUrl": "https://media.rawg.io/media/games/8bb/8bbdc8ce68442f6ff1724a7807592101.jpg",
+      "iconUrl": "",
       "addedAt": "2026-09-01"
     },
     {

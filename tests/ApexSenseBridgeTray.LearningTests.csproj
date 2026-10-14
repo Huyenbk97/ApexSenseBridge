@@ -79,18 +79,6 @@
     <Compile Include="..\shared\BridgeArguments.cs">
       <Link>Production\BridgeArguments.cs</Link>
     </Compile>
-    <Compile Include="..\ApexSenseBridgeTray\Models\GameProfile.cs">
-      <Link>Production\GameProfile.cs</Link>
-    </Compile>
-    <Compile Include="..\ApexSenseBridgeTray\Models\SessionRecord.cs">
-      <Link>Production\SessionRecord.cs</Link>
-    </Compile>
-    <Compile Include="..\ApexSenseBridgeTray\Services\GameProfileService.cs">
-      <Link>Production\GameProfileService.cs</Link>
-    </Compile>
-    <Compile Include="..\ApexSenseBridgeTray\Services\SessionHistoryService.cs">
-      <Link>Production\SessionHistoryService.cs</Link>
-    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

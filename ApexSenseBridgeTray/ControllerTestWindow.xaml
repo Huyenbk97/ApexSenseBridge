@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterOwner"
         ResizeMode="NoResize"
         WindowStyle="None"
-        Background="{DynamicResource WindowBackground}"
+        Background="#060A16"
         FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif">
 
     <Window.Resources>
@@ -77,7 +77,14 @@
         <Grid>
             <!-- Ambient halos clipped to the rounded frame -->
             <Grid x:Name="Backdrop" IsHitTestVisible="False" ClipToBounds="True">
-                <Rectangle Fill="{DynamicResource AmbientLightTopBrush}"/>
+                <Rectangle>
+                    <Rectangle.Fill>
+                        <RadialGradientBrush Center="0.1,0" GradientOrigin="0.1,0" RadiusX="0.45" RadiusY="0.65">
+                            <GradientStop Color="#4D2A6BFF" Offset="0"/>
+                            <GradientStop Color="#002A6BFF" Offset="1"/>
+                        </RadialGradientBrush>
+                    </Rectangle.Fill>
+                </Rectangle>
             </Grid>
 
             <Grid>

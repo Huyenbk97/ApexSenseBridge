@@ -7,7 +7,7 @@
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize"
         WindowStyle="None"
-        Background="{DynamicResource WindowBackground}"
+        Background="#060A16"
         FontFamily="Segoe UI Variable Display, Segoe UI, sans-serif">
 
     <Window.Resources>
@@ -339,7 +339,7 @@
                                 <Border CornerRadius="6" Background="{DynamicResource FeaturePillBg}"
                                         BorderBrush="{DynamicResource FeaturePillBorder}" BorderThickness="1"
                                         Padding="10,4" Margin="0,0,0,5" HorizontalAlignment="Right">
-                                    <TextBlock x:Name="TxtActiveProfile" Text="{DynamicResource Loc_ProfileStandard}" FontSize="11" FontWeight="SemiBold"
+                                    <TextBlock x:Name="TxtActiveProfile" Text="Standard" FontSize="11" FontWeight="SemiBold"
                                                Foreground="{DynamicResource PlayStationBlue}"/>
                                 </Border>
                                 <Border x:Name="PillTriggers" CornerRadius="6" Background="{DynamicResource FeaturePillBg}"
@@ -439,8 +439,6 @@
                             Padding="18,12" Margin="0,0,0,6">
                         <DockPanel>
                             <WrapPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
-                                <RadioButton x:Name="RadLangVi" Content="Tiếng Việt" Style="{StaticResource LangOptionButton}"
-                                             Checked="OnLanguageOptionChecked"/>
                                 <RadioButton x:Name="RadLangEn" Content="English" Style="{StaticResource LangOptionButton}"
                                              Checked="OnLanguageOptionChecked"/>
                                 <RadioButton x:Name="RadLangFr" Content="Français" Style="{StaticResource LangOptionButton}"
@@ -455,48 +453,20 @@
                         </DockPanel>
                     </Border>
 
-                    <Border x:Name="NavTheme" CornerRadius="8" Background="{DynamicResource CardBackground}"
-                            BorderBrush="Transparent" BorderThickness="1.6"
-                            Padding="18,12" Margin="0,0,0,6">
-                        <StackPanel>
-                            <TextBlock Text="{DynamicResource Loc_ThemeTitle}" FontSize="13" FontWeight="Medium"
-                                       Foreground="{DynamicResource TextPrimary}" Margin="0,0,0,8"/>
-                            <WrapPanel Orientation="Horizontal">
-                                <RadioButton x:Name="RadThemePS" Content="🔵 PlayStation" Style="{StaticResource LangOptionButton}"
-                                             Margin="0,0,4,4" Checked="OnThemeOptionChecked"/>
-                                <RadioButton x:Name="RadThemeXbox" Content="🟢 Xbox Viper" Style="{StaticResource LangOptionButton}"
-                                             Margin="0,0,4,4" Checked="OnThemeOptionChecked"/>
-                                <RadioButton x:Name="RadThemeCyber" Content="🟣 Cyberpunk" Style="{StaticResource LangOptionButton}"
-                                             Margin="0,0,4,4" Checked="OnThemeOptionChecked"/>
-                                <RadioButton x:Name="RadThemeOled" Content="⚫ OLED Black" Style="{StaticResource LangOptionButton}"
-                                             Margin="0,0,4,4" Checked="OnThemeOptionChecked"/>
-                                <RadioButton x:Name="RadThemeLight" Content="⚪ Clean Light" Style="{StaticResource LangOptionButton}"
-                                             Margin="0,0,4,4" Checked="OnThemeOptionChecked"/>
-                                <RadioButton x:Name="RadThemeSystem" Content="💻 Theo Windows" Style="{StaticResource LangOptionButton}"
-                                             Margin="0,0,4,4" Checked="OnThemeOptionChecked"/>
-                            </WrapPanel>
-                        </StackPanel>
-                    </Border>
-
                     <Border x:Name="BannerUpdate" CornerRadius="8" Background="{DynamicResource PlayStationBlue}"
                             Padding="16,12" Margin="0,0,0,8" Visibility="Collapsed">
-                        <StackPanel>
-                            <DockPanel>
-                                <Button x:Name="BtnDownloadUpdate" Content="{DynamicResource Loc_BtnDownload}" Style="{StaticResource BtnSecondary}"
-                                        Background="White" Foreground="{DynamicResource PlayStationBlue}"
-                                        BorderThickness="0" DockPanel.Dock="Right" Padding="12,5" FontSize="11.5" FontWeight="SemiBold"
-                                        Click="OnDownloadUpdateClick"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock x:Name="TxtUpdateTitle" Text="{DynamicResource Loc_UpdateBannerTitle}" FontSize="13" FontWeight="SemiBold"
-                                               Foreground="White"/>
-                                    <TextBlock x:Name="TxtUpdateSubtitle" Text="{DynamicResource Loc_UpdateBannerSubtitle}"
-                                               FontSize="11" Foreground="#E0F2FE" Margin="0,2,0,0"/>
-                                </StackPanel>
-                            </DockPanel>
-                            <ProgressBar x:Name="PrgUpdateDownload" Height="4" Margin="0,8,0,0"
-                                         Minimum="0" Maximum="100" Value="0" Visibility="Collapsed"
-                                         Foreground="White" Background="#40FFFFFF" BorderThickness="0"/>
-                        </StackPanel>
+                        <DockPanel>
+                            <Button Content="{DynamicResource Loc_BtnDownload}" Style="{StaticResource BtnSecondary}"
+                                    Background="White" Foreground="{DynamicResource PlayStationBlue}"
+                                    BorderThickness="0" DockPanel.Dock="Right" Padding="12,5" FontSize="11.5" FontWeight="SemiBold"
+                                    Click="OnDownloadUpdateClick"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="TxtUpdateTitle" Text="{DynamicResource Loc_UpdateBannerTitle}" FontSize="13" FontWeight="SemiBold"
+                                           Foreground="White"/>
+                                <TextBlock x:Name="TxtUpdateSubtitle" Text="{DynamicResource Loc_UpdateBannerSubtitle}"
+                                           FontSize="11" Foreground="#E0F2FE" Margin="0,2,0,0"/>
+                            </StackPanel>
+                        </DockPanel>
                     </Border>
 
                     <Border x:Name="NavTestController" CornerRadius="8" Background="{DynamicResource CardBackground}"
@@ -544,7 +514,7 @@
                         <DockPanel>
                             <Button Content="{DynamicResource Loc_BtnCheck}" Style="{StaticResource BtnSmall}" DockPanel.Dock="Right"
                                     VerticalAlignment="Center" Click="OnCheckUpdatesClick"/>
-                            <TextBlock x:Name="TxtVersionInfo" Text="ApexSenseBridge v1.1.0"
+                            <TextBlock x:Name="TxtVersionInfo" Text="ApexSenseBridge v1.0.1"
                                        FontSize="12" Foreground="{DynamicResource TextMuted}" VerticalAlignment="Center"/>
                         </DockPanel>
                     </Border>

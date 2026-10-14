@@ -27,8 +27,6 @@ namespace ApexSenseBridgeTray
         private TraySettings settings;
         private CloudGameListService gameListService;
         private EngineSessionManager sessionManager;
-        private GameProfileService gameProfileService;
-        private SessionHistoryService sessionHistoryService;
         private ExecutableLearningService learningService;
         private ProcessMonitorService monitorService;
         private UpdateCheckerService updateChecker;
@@ -65,7 +63,7 @@ namespace ApexSenseBridgeTray
             {
                 settings = TraySettings.Load();
                 LocalizationManager.Initialize(settings.Language);
-                ThemeManager.Initialize(settings.SelectedTheme, settings.CustomAccentColor);
+                ThemeManager.Initialize();
 
                 bool isNewInstance;
                 singleInstanceMutex = new Mutex(true, AppMutexName, out isNewInstance);
@@ -87,11 +85,7 @@ namespace ApexSenseBridgeTray
                 gameListService = new CloudGameListService();
                 gameListService.Initialize();
 
-                gameProfileService = new GameProfileService();
-                sessionHistoryService = new SessionHistoryService();
                 sessionManager = new EngineSessionManager();
-                sessionManager.ProfileService = gameProfileService;
-                sessionManager.HistoryService = sessionHistoryService;
                 learningService = new ExecutableLearningService();
                 monitorService = new ProcessMonitorService(
                     gameListService, sessionManager, learningService, settings);
@@ -271,22 +265,7 @@ namespace ApexSenseBridgeTray
                 {
                     try { await updateChecker.CheckForUpdatesAsync(true); } catch { }
                 });
-                string startTab = "dashboard";
-                int tabIdx = Array.IndexOf(e.Args, "--tab");
-                if (tabIdx >= 0 && tabIdx < e.Args.Length - 1)
-                {
-                    startTab = e.Args[tabIdx + 1];
-                }
-
-                bool startMinimized = Array.IndexOf(e.Args, "--minimized") >= 0 ||
-                                      Array.IndexOf(e.Args, "--silent") >= 0 ||
-                                      Array.IndexOf(e.Args, "--tray") >= 0 ||
-                                      Array.IndexOf(e.Args, "--background") >= 0;
-
-                if (!startMinimized)
-                {
-                    ShowMainWindow(startTab);
-                }
+                if (Array.IndexOf(e.Args, "--show") >= 0) ShowMainWindow();
             }
             catch (Exception ex)
             {
@@ -510,9 +489,7 @@ namespace ApexSenseBridgeTray
         private readonly object windowLock = new object();
         private bool isOpeningDashboard;
 
-        private void ShowMainWindow() => ShowMainWindow("dashboard");
-
-        private void ShowMainWindow(string tab)
+        private void ShowMainWindow()
         {
             try
             {
@@ -526,7 +503,6 @@ namespace ApexSenseBridgeTray
                         {
                             dashboardWindow.WindowState = WindowState.Normal;
                         }
-                        dashboardWindow.SelectTab(tab);
                         dashboardWindow.Show();
                         dashboardWindow.Activate();
                         dashboardWindow.Focus();
@@ -545,7 +521,7 @@ namespace ApexSenseBridgeTray
                             dashboardWindow = new GameListWindow(
                                 gameListService, settings, learningService,
                                 sessionManager, monitorService, updateChecker,
-                                initialTab: tab);
+                                initialTab: "dashboard");
 
                             dashboardWindow.Closed += (s, e) =>
                             {
@@ -554,10 +530,6 @@ namespace ApexSenseBridgeTray
                                     dashboardWindow = null;
                                 }
                             };
-                        }
-                        else
-                        {
-                            dashboardWindow.SelectTab(tab);
                         }
 
                         if (dashboardWindow.WindowState == WindowState.Minimized)

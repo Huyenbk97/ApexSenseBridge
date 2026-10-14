@@ -67,13 +67,11 @@ namespace ApexSenseBridgeTray
             navItems.Add(NavSyncLightbar);
             navItems.Add(NavManualBridge);
             navItems.Add(NavLanguage);
-            navItems.Add(NavTheme);
             navItems.Add(NavTestController);
             navItems.Add(NavDatabase);
             navItems.Add(NavUpdate);
 
             UpdateLanguageRadios();
-            UpdateThemeRadios();
 
             ChkAutoDetect.IsChecked = settings.AutoDetectGames;
             ChkTriggerAdaptive.IsChecked = settings.TriggerOnAdaptiveTriggers;
@@ -153,7 +151,6 @@ namespace ApexSenseBridgeTray
         private void UpdateLanguageRadios()
         {
             string lang = LocalizationManager.CurrentLanguage;
-            if (RadLangVi != null) RadLangVi.IsChecked = (lang == LocalizationManager.LangVietnamese);
             if (RadLangEn != null) RadLangEn.IsChecked = (lang == LocalizationManager.LangEnglish);
             if (RadLangFr != null) RadLangFr.IsChecked = (lang == LocalizationManager.LangFrench);
             if (RadLangEs != null) RadLangEs.IsChecked = (lang == LocalizationManager.LangSpanish);
@@ -163,10 +160,8 @@ namespace ApexSenseBridgeTray
         private void OnLanguageOptionChecked(object sender, RoutedEventArgs e)
         {
             if (!isInitialized) return;
-            string newLang = LocalizationManager.LangVietnamese;
-            if (RadLangVi != null && RadLangVi.IsChecked == true) newLang = LocalizationManager.LangVietnamese;
-            else if (RadLangEn != null && RadLangEn.IsChecked == true) newLang = LocalizationManager.LangEnglish;
-            else if (RadLangFr != null && RadLangFr.IsChecked == true) newLang = LocalizationManager.LangFrench;
+            string newLang = LocalizationManager.LangEnglish;
+            if (RadLangFr != null && RadLangFr.IsChecked == true) newLang = LocalizationManager.LangFrench;
             else if (RadLangEs != null && RadLangEs.IsChecked == true) newLang = LocalizationManager.LangSpanish;
             else if (RadLangZh != null && RadLangZh.IsChecked == true) newLang = LocalizationManager.LangChinese;
 
@@ -175,36 +170,6 @@ namespace ApexSenseBridgeTray
                 settings.Language = newLang;
                 settings.Save();
                 LocalizationManager.SetLanguage(newLang);
-            }
-        }
-
-        private void UpdateThemeRadios()
-        {
-            string theme = settings.SelectedTheme ?? ThemeManager.ThemePlayStation;
-            if (RadThemePS != null) RadThemePS.IsChecked = (theme == ThemeManager.ThemePlayStation);
-            if (RadThemeXbox != null) RadThemeXbox.IsChecked = (theme == ThemeManager.ThemeXbox);
-            if (RadThemeCyber != null) RadThemeCyber.IsChecked = (theme == ThemeManager.ThemeCyberpunk);
-            if (RadThemeOled != null) RadThemeOled.IsChecked = (theme == ThemeManager.ThemeOled);
-            if (RadThemeLight != null) RadThemeLight.IsChecked = (theme == ThemeManager.ThemeLight);
-            if (RadThemeSystem != null) RadThemeSystem.IsChecked = (theme == ThemeManager.ThemeSystem);
-        }
-
-        private void OnThemeOptionChecked(object sender, RoutedEventArgs e)
-        {
-            if (!isInitialized) return;
-            string newTheme = ThemeManager.ThemePlayStation;
-            if (RadThemePS != null && RadThemePS.IsChecked == true) newTheme = ThemeManager.ThemePlayStation;
-            else if (RadThemeXbox != null && RadThemeXbox.IsChecked == true) newTheme = ThemeManager.ThemeXbox;
-            else if (RadThemeCyber != null && RadThemeCyber.IsChecked == true) newTheme = ThemeManager.ThemeCyberpunk;
-            else if (RadThemeOled != null && RadThemeOled.IsChecked == true) newTheme = ThemeManager.ThemeOled;
-            else if (RadThemeLight != null && RadThemeLight.IsChecked == true) newTheme = ThemeManager.ThemeLight;
-            else if (RadThemeSystem != null && RadThemeSystem.IsChecked == true) newTheme = ThemeManager.ThemeSystem;
-
-            if (newTheme != settings.SelectedTheme)
-            {
-                settings.SelectedTheme = newTheme;
-                settings.Save();
-                ThemeManager.SetTheme(newTheme);
             }
         }
 
@@ -275,9 +240,7 @@ namespace ApexSenseBridgeTray
         {
             var gameTitle = sessionManager.ActiveGameTitle;
             if (string.IsNullOrWhiteSpace(gameTitle) || gameTitle == "Aucun" || gameTitle == "None" ||
-                gameTitle == "Pont manuel forcé" || gameTitle == "Forced manual bridge" ||
-                gameTitle == LocalizationManager.Get("Loc_NoActiveGame") ||
-                gameTitle == LocalizationManager.Get("Loc_ManualBridgeGameTitle")) return;
+                gameTitle == "Pont manuel forcé" || gameTitle == "Forced manual bridge") return;
 
             SupportedGame game;
             if (gameListService.TryFindGame(gameTitle, out game) && game != null)
@@ -456,35 +419,12 @@ namespace ApexSenseBridgeTray
             }
         }
 
-        private async void OnDownloadUpdateClick(object sender, RoutedEventArgs e)
+        private void OnDownloadUpdateClick(object sender, RoutedEventArgs e)
         {
-            if (updateChecker == null || latestUpdateInfo == null) return;
-
-            BtnDownloadUpdate.IsEnabled = false;
-            PrgUpdateDownload.Visibility = Visibility.Visible;
-            PrgUpdateDownload.Value = 0;
-            TxtUpdateSubtitle.Text = LocalizationManager.Get("Loc_UpdateAutoDownload");
-
-            var progress = new Progress<int>(percent =>
+            if (updateChecker != null && latestUpdateInfo != null)
             {
-                PrgUpdateDownload.Value = percent;
-                TxtUpdateSubtitle.Text = string.Format(
-                    LocalizationManager.Get("Loc_UpdateAutoDownloadProgress"),
-                    latestUpdateInfo.LatestVersion, percent);
-            });
-
-            bool success = await updateChecker.DownloadAndInstallAsync(latestUpdateInfo, progress);
-            if (!success)
-            {
-                TxtUpdateSubtitle.Text = LocalizationManager.Get("Loc_UpdateAutoDownloadFailed");
+                updateChecker.DownloadOrOpenRelease(latestUpdateInfo);
             }
-            else
-            {
-                TxtUpdateSubtitle.Text = LocalizationManager.Get("Loc_UpdateAutoDownloadComplete");
-            }
-
-            BtnDownloadUpdate.IsEnabled = true;
-            PrgUpdateDownload.Visibility = Visibility.Collapsed;
         }
 
         private void OnOpenGameListClick(object sender, RoutedEventArgs e)
@@ -681,19 +621,11 @@ namespace ApexSenseBridgeTray
             }
             else if (item == NavLanguage)
             {
-                // Cycle through languages
-                if (RadLangVi != null && RadLangVi.IsChecked == true)
+                // Toggle between the two languages
+                if (RadLangFr.IsChecked == true)
                     RadLangEn.IsChecked = true;
-                else if (RadLangEn != null && RadLangEn.IsChecked == true)
+                else
                     RadLangFr.IsChecked = true;
-                else if (RadLangFr != null && RadLangFr.IsChecked == true)
-                    RadLangEs.IsChecked = true;
-                else if (RadLangEs != null && RadLangEs.IsChecked == true)
-                    RadLangZh.IsChecked = true;
-                else if (RadLangVi != null)
-                    RadLangVi.IsChecked = true;
-                else if (RadLangEn != null)
-                    RadLangEn.IsChecked = true;
             }
             else if (item == NavDatabase)
             {

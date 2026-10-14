@@ -47,10 +47,6 @@ namespace ApexSenseBridgeTray.Models
         [ScriptIgnore]
         public string ForcedProfile { get; set; }
         public string Language { get; set; }
-        public string SelectedTheme { get; set; } = "playstation";
-        public string CustomAccentColor { get; set; }
-        public string BackgroundImagePath { get; set; }
-        public string GameListViewMode { get; set; } = "list";
         // The support callout is introduced once, then never again.
         public bool SupportHintShown { get; set; }
         public List<string> ExcludedGames { get; set; }
@@ -93,7 +89,7 @@ namespace ApexSenseBridgeTray.Models
             }
         }
 
-        internal string BuildControllerCalibrationArguments(GameProfile profile = null)
+        internal string BuildControllerCalibrationArguments()
         {
             lock (this)
             {
@@ -101,10 +97,6 @@ namespace ApexSenseBridgeTray.Models
                 foreach (var model in new[] { "apex4", "apex5", "apex6" })
                 {
                     var c = GetControllerCalibration(model);
-                    if (profile != null)
-                    {
-                        c = profile.ApplyTo(c, model);
-                    }
                     result.AppendFormat(System.Globalization.CultureInfo.InvariantCulture,
                         " --controller-calibration {0}:{1}:{2}:{3}:{4}:{5}:{6}:{7}",
                         model, c.TriggerStrengthPercent, c.VibrationStrengthPercent,
@@ -131,7 +123,7 @@ namespace ApexSenseBridgeTray.Models
             GameExecutables = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
             InitializationTimeoutSeconds = 20;
             ForcedProfile = "none";
-            Language = "vi";
+            Language = "auto";
             ExcludedGames = new List<string>();
             ApexProfileSlots = new Dictionary<string, int>();
         }

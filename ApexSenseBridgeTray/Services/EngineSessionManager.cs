@@ -108,9 +108,6 @@ namespace ApexSenseBridgeTray.Services
             healthTimer = new Timer(CheckHealth, null, 500, 500);
         }
 
-        public GameProfileService ProfileService { get; set; }
-        public SessionHistoryService HistoryService { get; set; }
-        public bool Failed { get { lock (syncLock) { return failed; } } }
         public string StateName { get { lock (syncLock) { return isStarting ? "Starting" : isStopping ? "Stopping" : activeSession != null ? activeSession.ReadStatus().Phase.ToString() : failed ? "Failed" : "Stopped"; } } }
         public string LastReason { get { lock (syncLock) { return lastReason; } } }
         public string ActiveController { get { lock (syncLock) { return controller; } } }
@@ -290,7 +287,7 @@ namespace ApexSenseBridgeTray.Services
                     return false;
                 }
 
-                var args = BuildArgumentsForGame(gameTitle, profileName, settings, apexProfileSlot, ProfileService);
+                var args = BuildArguments(profileName, settings, apexProfileSlot);
                 RaiseLogMessage(string.Format("Starting bridge: {0} {1}", enginePath, args));
 
                 int timeoutSec = Math.Max(MinimumInitializationSeconds,
@@ -353,16 +350,6 @@ namespace ApexSenseBridgeTray.Services
                 {
                     startHandler(gameTitle, profileName);
                 }
-
-                if (HistoryService != null)
-                {
-                    try
-                    {
-                        HistoryService.StartSession(gameTitle, gameTitle, profileName, controller, apexProfileSlot, "Tray");
-                    }
-                    catch { }
-                }
-
                 return true;
             }
             finally
@@ -413,15 +400,6 @@ namespace ApexSenseBridgeTray.Services
             }
             StateChanged?.Invoke();
 
-            if (HistoryService != null)
-            {
-                try
-                {
-                    HistoryService.EndSession(true, reason);
-                }
-                catch { }
-            }
-
             var stopHandler = SessionStopped;
             if (stopHandler != null)
             {
@@ -433,16 +411,6 @@ namespace ApexSenseBridgeTray.Services
         {
             lock (syncLock) { lastReason = err; failed = true; }
             StateChanged?.Invoke();
-
-            if (HistoryService != null)
-            {
-                try
-                {
-                    HistoryService.EndSession(false, err);
-                }
-                catch { }
-            }
-
             var errHandler = SessionError;
             if (errHandler != null)
             {
@@ -496,15 +464,10 @@ namespace ApexSenseBridgeTray.Services
         private static string BuildArguments(string profileName, TraySettings settings,
                                              int apexProfileSlot)
         {
-            return BuildArgumentsForGame(null, profileName, settings, apexProfileSlot, null);
-        }
-
-        private static string BuildArgumentsForGame(string gameTitle, string profileName, TraySettings settings,
-                                                    int apexProfileSlot, GameProfileService profileService)
-        {
             var arguments = BridgeArguments.Build(profileName, false, 12, false, apexProfileSlot);
-            var gameProfile = profileService != null ? profileService.GetProfile(gameTitle) : null;
-            return arguments + (settings != null ? settings.BuildControllerCalibrationArguments(gameProfile) : string.Empty);
+            // Send all model profiles; only the engine's verified device selects
+            // one. A stale UI label / hot swap can never select another model's data.
+            return arguments + (settings != null ? settings.BuildControllerCalibrationArguments() : string.Empty);
         }
     }
 }

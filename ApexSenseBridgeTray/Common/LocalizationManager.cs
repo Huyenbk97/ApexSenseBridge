@@ -51,7 +51,7 @@ namespace ApexSenseBridgeTray.Common
             string lang = preferredLanguage;
             if (string.IsNullOrWhiteSpace(lang) || string.Equals(lang, "auto", StringComparison.OrdinalIgnoreCase))
             {
-                lang = LangVietnamese;
+                lang = DetectSystemLanguage();
             }
             SetLanguage(lang);
         }

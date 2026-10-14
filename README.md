@@ -1,253 +1,347 @@
-# ApexSenseBridge 1.1.0
+# ApexSenseBridge 1.0.1
 
-**Tay cầm Flydigi APEX. Tính năng gốc của PlayStation 5 DualSense. Trên Windows.**
+**Your Flydigi APEX. Native DualSense features. On Windows.**
 
-ApexSenseBridge mang toàn bộ tính năng điều khiển và phản hồi xúc giác gốc của **PlayStation 5 DualSense** lên các dòng tay cầm Flydigi **APEX 4, APEX 5 và APEX 6 Pro** thông qua cơ chế giả lập tay cầm DualSense ảo:
-- **APEX 4 & APEX 5:** Chuyển đổi Adaptive Triggers (cò phản hồi lực) thành lực cản FORCEADAPT và chuyển đổi âm thanh rung haptics thành rung báng cầm.
-- **APEX 6 Pro:** Sử dụng hệ thống 4 mô-tơ voice-coil độc quyền để tái hiện âm thanh rung haptic gốc và hiệu ứng cò lực.
+ApexSenseBridge brings native PlayStation 5 DualSense input and feedback to
+Flydigi **APEX 4, APEX 5 and APEX 6 Pro** controllers through a virtual DualSense.
+APEX 4/5 translate adaptive triggers into FORCEADAPT resistance and audio haptics
+into grip vibration. APEX 6 Pro uses its four voice-coil actuators for native
+haptic audio and translated trigger feedback.
 
-Bản phát hành **1.1.0** mang đến giao diện lưới poster 8 cột hiện đại, kệ game chơi gần đây, lưu theme bền vững, khởi động mở cửa sổ trực tiếp và hoàn thiện 100% ảnh bìa chính thức cho 220 tựa game.
+**1.0.0 is the first stable release**, bringing together the standalone app,
+Playnite integration, controller-specific settings and a gamepad-friendly
+interface in nine languages.
 
-[Tải về bản mới nhất (v1.1.0)](https://github.com/Huyenbk97/ApexSenseBridge/releases/latest) · [Khắc phục sự cố](TROUBLESHOOTING.md) · [Lịch sử cập nhật](CHANGELOG.md)
+[Download ApexSenseBridge 1.0.0](https://github.com/ReynArts/ApexSenseBridge/releases/latest) ·
+[Troubleshooting](TROUBLESHOOTING.md) · [Changelog](CHANGELOG.md)
 
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011%20x64-lightgrey.svg)](#yêu-cầu-hệ-thống)
-[![Release](https://img.shields.io/github/v/release/Huyenbk97/ApexSenseBridge?color=brightgreen)](https://github.com/Huyenbk97/ApexSenseBridge/releases/latest)
-[![Authenticode](https://img.shields.io/badge/code%20signing-Authenticode-blueviolet.svg)](#bảo-mật-chữ-ký-số--tự-động-khôi-phục)
+[![Platform](https://img.shields.io/badge/platform-Windows%2010%20%7C%2011%20x64-lightgrey.svg)](#requirements)
+[![Release](https://img.shields.io/github/v/release/ReynArts/ApexSenseBridge?color=brightgreen)](https://github.com/ReynArts/ApexSenseBridge/releases/latest)
+[![Authenticode](https://img.shields.io/badge/code%20signing-Authenticode-blueviolet.svg)](#security-signing--crash-recovery)
 
-<img width="500" alt="Giao diện ApexSenseBridge" src="https://github.com/user-attachments/assets/c47eba4c-e718-4890-9947-4afcca206aa8" />
-
----
-
-## Mục lục
-
-- [Điểm nổi bật trên phiên bản 1.1.0](#điểm-nổi-bật-trên-phiên-bản-110)
-- [Các tay cầm được hỗ trợ](#các-tay-cầm-được-hỗ-trợ)
-- [Khả năng tương thích trò chơi](#khả-năng-tương-thích-trò-chơi)
-- [Nguyên lý hoạt động](#nguyên-lý-hoạt-động)
-- [Hướng dẫn cài đặt & Bắt đầu](#hướng-dẫn-cài-đặt--bắt-đầu)
-- [Các chế độ sử dụng](#các-chế-độ-sử-dụng)
-- [Cài đặt ứng dụng & Khôi phục kết nối](#cài-đặt-ứng-dụng--khôi-phục-kết-nối)
-- [Phím tắt thao tác Touchpad](#phím-tắt-thao-tác-touchpad)
-- [Bảo mật & Tự động phục hồi](#bảo-mật-chữ-ký-số--tự-động-khôi-phục)
-- [Lệnh chuẩn đoán (CLI)](#lệnh-chuẩn-đoán-cli)
-- [Biên dịch từ mã nguồn](#biên-dịch-từ-mã-nguồn)
-- [Giấy phép & Bản quyền](#giấy-phép--ghi-nhận-bản-quyền)
+<img width="500" alt="screen ASB 1 0" src="https://github.com/user-attachments/assets/c47eba4c-e718-4890-9947-4afcca206aa8" />
 
 ---
 
-## Điểm nổi bật trên phiên bản 1.1.0
+## Contents
 
-- **🎛️ Chế độ xem lưới 8 cột (8-Column Grid View):** Bổ sung tùy chọn xem danh sách game dạng poster lưới 8 cột tối ưu cho màn hình rộng và TV, duyệt game trực quan và sinh động.
-- **⏱️ Kệ trò chơi đã chơi gần đây (Recently Played Shelf):** Tự động theo dõi lịch sử khởi chạy và ghim tối đa 8 game vừa chơi lên đầu màn hình cùng thời gian tương đối (ví dụ: *vừa xong*, *2 giờ trước*).
-- **🎨 Lưu Theme bảng điều khiển cố định:** Hệ thống theme Console (PlayStation, Xbox, Nintendo Switch, Steam Deck và Màu nhấn tùy chỉnh) được lưu bền vững vào cài đặt, không còn bị reset về mặc định khi mở lại app.
-- **🖼️ 100% Ảnh bìa chính thức chuẩn nét:** Tích hợp đầy đủ ảnh bìa dọc chuẩn PlayStation Store và Cloudflare Steam CDN cho toàn bộ 220+ tựa game có hỗ trợ DualSense.
-- **🖱️ Không bị nhảy danh sách khi chọn game:** Sửa lỗi giật/nhảy vị trí cuộn khi người dùng click chuột vào thẻ game ở cả hai chế độ Danh sách và Lưới.
-- **🚀 Mở ứng dụng là hiện giao diện ngay:** Nhấp đúp vào `ApexSenseBridgeTray.exe` sẽ lập tức mở cửa sổ Dashboard lên màn hình chính mà không bắt buộc người dùng phải tìm bấm vào icon dưới khay hệ thống (System Tray). Tham số chạy nền (`--minimized`) được bảo toàn cho tính năng khởi động cùng Windows.
-- **🎮 Điều hướng tay cầm chuẩn Console:** Hỗ trợ đầy đủ điều hướng bằng tay cầm (D-pad nhảy 8 ô khi ở chế độ lưới, nút A/B/X/Y, cò và cần gạt) kèm các phím tắt bàn phím (mũi tên, Enter, Esc, Ctrl+Tab, Ctrl+F).
-- **🌍 9 ngôn ngữ tích hợp:** Tiếng Việt, Tiếng Anh, Pháp, Tây Ban Nha, Trung giản thể, Nga, Hàn, Nhật và Bồ Đào Nha, tự động nhận diện ngôn ngữ Windows và đổi tức thì trong app.
-- **🕹️ Hiệu chỉnh riêng biệt theo từng dòng tay cầm:** Hồ sơ hiệu chỉnh độc lập cho APEX 4, APEX 5 và APEX 6 Pro, tự động nhận diện phần cứng thực tế trước khi áp dụng.
-- **🔊 Khuếch đại lực rung báng cầm (0–200%):** Tăng cường lực rung truyền thống lên tới 200% trên APEX 4 và APEX 5 mà không làm ảnh hưởng đến độ trễ hay lực cản của cò.
-- **🎯 Rung Voice-Coil gốc trên APEX 6 Pro:** Hỗ trợ đầy đủ APEX 6 Pro và biến thể Phantom Blade Zero `0x98` với xung nhịp đồng bộ 1 kHz và hiệu ứng Bow `0x22` gốc.
-- **🧭 Giải mã Gyroscope 16-bit trên APEX 4:** Đọc trực tiếp con quay hồi chuyển phần cứng với độ nhạy tùy chỉnh 25–400% cùng thanh trượt bù trừ trục Yaw độc lập.
-- **🛡️ Bộ giải cứu kết nối & Dọn dẹp tiến trình rác:** Tự động phát hiện khi tay cầm bị ngắt kết nối/ngủ và hỗ trợ khôi phục tức thì mà không cần tắt game.
+- [Stable 1.0.0 highlights](#stable-100-highlights)
+- [Supported controllers](#supported-controllers)
+- [Game compatibility](#game-compatibility)
+- [How it works](#how-it-works)
+- [Installation and first session](#installation--getting-started)
+- [Standalone and Playnite usage](#usage-modes)
+- [App settings and disconnection recovery](#app-settings--recovery)
+- [Touchpad shortcuts](#touchpad-shortcuts)
+- [Security and recovery](#security-signing--crash-recovery)
+- [Diagnostics](#diagnostics--cli)
+- [Building from source](#building-from-source)
+- [License and notices](#license--third-party-notices)
 
 ---
 
-## Các tay cầm được hỗ trợ
+## Stable 1.0.0 Highlights
 
-| Tay cầm | Phương thức kết nối | Tình trạng kiểm thử phần cứng | Tính năng đặc biệt |
+- **🎮 Console Interface Refresh:** Complete console-grade interface for the Tray app, controller diagnostic, and language picker. Full gamepad navigation (D-pad/stick, Cross/A, Circle/B, Options/Menu, bumpers/triggers) and keyboard shortcuts (arrows, Enter, Escape, Ctrl+Tab, Ctrl+F).
+- **🌍 9 Supported Languages:** English, French, Spanish, Simplified Chinese, Russian, Korean, Vietnamese, Japanese, and Brazilian Portuguese, with automatic Windows language detection and in-app language switching.
+- **✨ Recently Added Games & 215+ Titles:** The home screen features a curated shelf of newly added games with "New" badges (last 30 days) and date tracking, backed by an automated daily PCGamingWiki sync.
+- **🕹️ Controller-Specific Calibration & Hot-Plug Safety:** Independent calibration profiles for APEX 4, APEX 5, and APEX 6 Pro. Settings controls lock when no supported pad is connected, preventing misconfiguration. Engine selects calibration only after verified hardware identity.
+- **🔊 Grip Vibration Amplification (0–200%):** Conventional grip vibration strength can be boosted up to 200% on APEX 4 and APEX 5 with saturation at the motor-command limit, without changing trigger resistance.
+- **🎯 APEX 6 Pro Native Voice-Coil Haptics:** Full support for the APEX 6 Pro and official Phantom Blade Zero `0x98` variant. Features synchronized 1 kHz trigger carrier clocks, native Bow effect `0x22`, preserved quiet native PCM, and experimental companding gain (`--apex6-haptic-gain 100..200`).
+- **🧭 APEX 4 Native Gyroscope Decoding:** Direct 16-bit hardware gyro parsing with customizable sensitivity (25–400%) and independent yaw correction slider.
+- **🛡️ Intelligent HidHide Diagnostics:** Diagnoses access conflicts when DSX, DS4Windows, or BetterJoy hold the HidHide driver open and explicitly lists conflicting processes.
+- **🕹️ Death Stranding 2 Touchpad Remapping:** Dedicated profile mapping `View/Back` to right-touchpad click (Likes, Communication) and `LB + Menu` to left-touchpad click (Photo Mode).
+- **🛡️ Guided Disconnection Recovery & Zombie Reaper:** Automatic bridge recovery guidance on controller disconnect or sleep, plus automatic orphan child process termination on startup timeout.
+- **🏎️ Built-In libVIIPER v0.7.0 Backend & Kernel USBip 0.9.8.0:** Attestation-signed Microsoft kernel driver with loopback-only communication and measured sub-2 ms report forwarding.
+
+See the [changelog](CHANGELOG.md) for the development history and the
+[release checklist](RELEASE_CHECKLIST.md) for packaging and validation requirements.
+
+---
+
+## Supported Controllers
+
+| Controller | Connection Modes | Hardware Verification Status | Special Features |
 |---|---|---|---|
-| **Flydigi APEX 6 Pro** | Đầu thu 2.4 GHz / Cáp USB | ✅ Đã kiểm thử thực tế (Bản thường & PBZ `0x98`) | 4 mô-tơ voice-coil, rung haptic DualSense PCM gốc & gain khuếch đại, đồng bộ xung nhịp cò, hiệu ứng Bow `0x22` |
-| **Flydigi APEX 5** | Đầu thu 2.4 GHz / Cáp USB | ✅ Hoạt động hoàn hảo trong game | Lực cản cò FORCEADAPT đầy đủ, Audio Haptics, khuếch đại rung báng cầm 0–200%, chuyển đổi nhanh Profile phần cứng 1–4 |
-| **Flydigi APEX 4** | Đầu thu 2.4 GHz / Cáp USB (Chế độ DInput) | ✅ Hoạt động hoàn hảo trong game | Con quay hồi chuyển Gyro 16-bit gốc (độ nhạy 25–400% & bù Yaw), Lực cản cò FORCEADAPT, khuếch đại rung 0–200%, tự nhận dạng interface 32/64 byte |
+| **Flydigi APEX 6 Pro** | 2.4 GHz Dongle / Wired USB | ✅ Verified in Hardware (Standard & PBZ `0x98`) | Four voice-coil actuators, native DualSense PCM haptics & companding gain, synchronized trigger carriers, native Bow `0x22` |
+| **Flydigi APEX 5** | 2.4 GHz Dongle / Wired USB | ✅ Fully Verified in Hardware & Gameplay | Full FORCEADAPT Trigger Resistance, Audio Haptics, 0–200% Grip Rumble Gain, Onboard Profiles 1–4 switching |
+| **Flydigi APEX 4** | 2.4 GHz Dongle / Wired USB (DInput) | ✅ Fully Verified in Hardware & Gameplay | Direct 16-bit Native Gyroscope with 25–400% sensitivity & yaw correction, FORCEADAPT Resistance, 0–200% Grip Rumble Gain, 32-byte/64-byte interface auto-detection |
 
 ---
 
-## Khả năng tương thích trò chơi
+## Game Compatibility
 
-### ✅ Đã kiểm thử thực tế trên phần cứng
+### ✅ Hardware Verified in Active Gameplay
 
-- **Call of Duty: Modern Warfare:** Khấc cò động theo từng loại súng (tường chặn súng bán tự động, độ giật súng liên thanh, nhả chốt súng ngắm) và rung haptic âm thanh (bước chân, trượt, cháy nổ).
-- **Marvel's Spider-Man 2:** Lực căng khi đu tơ, tiếng click khi bắn tơ, vuốt cử chỉ camera và thao tác ứng dụng FNSM.
-- **Grand Theft Auto V Enhanced:** Lực cản chân ga, nhịp giật chống bó cứng phanh ABS, rung địa hình và vòng tua máy.
-- **Death Stranding 2:** Lực cản khi mang vác hàng hóa / địa hình dốc, thao tác đầy đủ nút DualSense và rung haptic chân thực.
-- **Ghost of Tsushima Director's Cut:** Lực va chạm vũ khí, cử chỉ vuốt gió dẫn đường (Giữ D-pad Phải + gạt cần Analog) và rung xúc giác chi tiết.
-- **Marvel's Spider-Man: Miles Morales:** Lực giật điện Venom, độ căng tơ nhện và cử chỉ ứng dụng FNSM.
-- **Warframe:** Cử chỉ vuốt thi triển chiêu thức tức thì và lực cản vũ khí theo thời gian thực.
+Hardware-tested titles include the following. Features depend on the game and controller:
+- **Call of Duty: Modern Warfare 4 Beta:** dynamic per-weapon trigger stops (semi-auto wall, full-auto recoil kick, bolt-action reset) and audio haptics (footsteps, slides, explosions).
+- **Marvel's Spider-Man 2:** dynamic web-swing tension, web-shooter click feedback, alternating D-pad Up camera gestures, and full FNSM touch swipes.
+- **Grand Theft Auto V Enhanced:** throttle resistance, ABS brake pulses, terrain rumble, and engine rev vibrations.
+- **Death Stranding 2:** terrain/cargo load trigger resistance, full DualSense controls, and immersive haptics.
+- **Ghost of Tsushima Director's Cut:** combat clash resistance, wind guidance swipe gestures (D-pad Right + Stick), and textured haptics.
+- **Marvel's Spider-Man: Miles Morales:** venom charge triggers, web-swing tension, and FNSM gestures.
+- **Warframe:** instant ability swipe gestures and dynamic weapon trigger resistance.
 
-### 📚 Hơn 220 tựa game tự động nhận diện DualSense
+### 📚 215+ Automatically Detected DualSense Games
 
-Thư viện game được đồng bộ tự động từ cơ sở dữ liệu PCGamingWiki. Ứng dụng khay hệ thống (Tray App) và tiện ích mở rộng Playnite sẽ tự động kích hoạt cầu nối khi bạn mở bất kỳ tựa game nào trong danh sách.
+The catalogue tracks native PlayStation 5 DualSense support using PCGamingWiki. Catalogue detection does not certify every effect on every APEX model. The Standalone Tray App and Playnite extension automatically recognize and engage the bridge when any supported title launches.
 
 ---
 
-## Nguyên lý hoạt động
+## How It Works
 
 ```text
-Game thông thường / Không hỗ trợ DualSense:
-Tay cầm APEX ──► XInput gốc của Windows ──► Game (ApexSenseBridge hoàn toàn ngủ yên)
+Non-DualSense / Standard Game:
+APEX Controller ──► Native XInput ──► Game (ApexSenseBridge is completely idle)
 
-Game hỗ trợ DualSense:
-Tay cầm APEX ──► ApexSenseBridge (C++20 Engine) ──► DualSense ảo ──► Game
-                      └── HidHide ẩn tay cầm vật lý tránh bị trùng lặp nút
-                          (Macro chuột/phím của Flydigi Space Station vẫn hoạt động)
+Supported DualSense Game:
+APEX Controller ──► ApexSenseBridge (C++20 Engine) ──► Virtual DualSense ──► Game
+                      └── HidHide isolates physical gamepad
+                          (Space Station M/K macros remain whitelisted)
 ```
 
-- **Không can thiệp vào bộ nhớ game (Zero In-Game Injection):** Không dùng injection, không chèn DLL, không chỉnh sửa file game. Mọi xử lý đều thông qua tầng driver HID chuẩn của Windows.
-- **Độ trễ cực thấp (< 2 ms):** Tốc độ chuyển tiếp báo cáo đo được từ 0.67 đến 1.54 ms ở tần số ~800–900 Hz trên APEX 5.
-- **Bảo vệ chống loạn nút:** Nếu driver không thể ẩn tay cầm vật lý an toàn, phiên làm việc sẽ dừng lại ngay lập tức để tránh tình trạng game nhận cả 2 tay cầm cùng lúc.
+- **Zero In-Game Injection:** No process injection, DLL hijacking, or memory tampering. All translation operates strictly via OS-level HID/controller interfaces and standard Windows APIs.
+- **Sub-2 ms Latency:** Measured 0.67–1.54 ms p99 report forwarding on the validated APEX 5 setup at ~800–900 Hz. This measures bridge forwarding, not total input-to-display latency.
+- **Fail-Closed Isolation:** If physical controller isolation cannot be guaranteed, the session halts safely to prevent confusing dual-input states.
 
 ---
 
-## Hướng dẫn cài đặt & Bắt đầu
+## Installation & Getting Started
 
 > [!TIP]
-> Nếu gặp bất kỳ vấn đề nào trong quá trình cài đặt hay sử dụng, vui lòng tham khảo [Hướng dẫn xử lý lỗi (TROUBLESHOOTING.md)](TROUBLESHOOTING.md).
+> For common diagnostic questions, minidump analysis, or setup help, consult the [Knowledge Base & Troubleshooting Guide](TROUBLESHOOTING.md).
 
-### Yêu cầu hệ thống
+### Requirements
 
-- Windows 10 hoặc Windows 11 **64-bit (x64)**.
-- Tay cầm APEX được kết nối qua **Cáp USB hoặc đầu thu USB 2.4 GHz** (Với APEX 4, vui lòng gạt sang chế độ **DInput**).
-- Quyền Quản trị viên (Administrator) để cài đặt driver USBip và HidHide trong lần đầu tiên.
-- Đối với game chạy qua Steam: **Hãy tắt Steam Input trong thuộc tính của game đó** để tín hiệu DualSense gốc truyền thẳng tới tay cầm ảo.
+- Windows 10 or 11 **x64**.
+- A supported controller connected by **USB or its 2.4 GHz receiver**. For APEX 4, use **DInput mode**.
+- Administrator access for the one-time USBip and HidHide driver installation.
+- For Steam games, **disable Steam Input for that game** so native DualSense input and feedback reach the virtual controller.
 
-### Cách 1: Sử dụng Bộ cài đặt Offline (Khuyên dùng)
+### Option A: Standard Offline Installer (Recommended)
 
-1. Tải về file **`ApexSenseBridge-Setup.exe`** từ mục [Bản phát hành mới nhất (Releases)](https://github.com/Huyenbk97/ApexSenseBridge/releases/latest).
-2. Chạy file cài đặt (cấp quyền Administrator khi được hỏi).
-   - Bộ cài sẽ tự động thiết lập Engine, Tray app vào thư mục `%ProgramFiles%\ApexSenseBridge`.
-   - Cài đặt driver chứng thực `usbip-win2 0.9.8.0` và `HidHide 1.5.230`.
-   - Tự động tích hợp tiện ích mở rộng vào Playnite nếu bạn đã cài Playnite.
-3. **Khởi động lại máy tính (Restart PC)** nếu được yêu cầu để nạp driver USBip.
+1. Download **`ApexSenseBridge-Setup.exe`** from the [Latest Release](https://github.com/ReynArts/ApexSenseBridge/releases/latest).
+2. Run the installer (elevates once as Administrator).
+   - Installs the core engine, Tray app, and Control Panel under `%ProgramFiles%\ApexSenseBridge`.
+   - Bundles certified `usbip-win2 0.9.8.0` and `HidHide 1.5.230`.
+   - Automatically registers the Playnite extension if Playnite is installed.
+3. **Restart your PC** if prompted (required after installing or updating the USBip driver).
 
-### Cách 2: Sử dụng Bản Portable (Không cần cài đặt)
+Uninstalling ApexSenseBridge never removes USBip. This is intentional: the
+upstream USBip filter removal restarts Windows USB hubs and must be handled
+separately from Windows Settings if the user really wants to remove it. HidHide
+is also kept by default and can only be removed after a separate default-No
+confirmation when its exact ApexSenseBridge install provenance is verified.
+Settings, logs, learned associations and Playnite profiles are kept by default;
+a separate prompt controls their deletion. Silent uninstall preserves all
+drivers and data unless `/REMOVEUSERDATA` is explicitly supplied for data only.
 
-1. Tải về file **`ApexSenseBridge-Portable.zip`**.
-2. Giải nén file zip vào bất kỳ thư mục nào trên máy tính của bạn.
-3. Nhấp chuột phải vào `Install-Drivers.cmd` chọn **Run as administrator** một lần duy nhất để cài driver, sau đó khởi động lại máy tính.
-4. Chạy `ApexSenseBridgeTray.exe` để bắt đầu sử dụng.
+> [!IMPORTANT]
+> **Upgrading from older USBip versions (0.9.7.x):** If you have an older USBip package installed, uninstall it in Windows Settings (*Installed Apps*), restart Windows, and then run setup. This avoids the known upstream installer hang on *"Uninstalling USBip..."*.
+>
+> Do not repeatedly run older installers or remove driver packages manually with `pnputil`.
 
----
+### Option B: Portable Package
 
-### Trải nghiệm phiên chơi đầu tiên
-
-1. Mở **`ApexSenseBridgeTray.exe`**. Giao diện Dashboard sẽ hiện ra ngay lập tức.
-2. Kết nối tay cầm APEX của bạn và chờ trong giây lát để tên dòng tay cầm được xác thực hiển thị.
-3. Mở một tựa game được hỗ trợ. Ứng dụng sẽ tự động kích hoạt cầu nối DualSense ảo; khi tắt game, cầu nối sẽ tự động đóng lại.
-4. Nếu game chỉ nhận diện tay cầm lúc mới khởi động: Hãy bật công tắc **Kích hoạt thủ công (Manual Bridge)** trên giao diện, chờ dòng chữ báo **Bridge active**, rồi hẵng mở game. Chơi xong thì tắt công tắc này đi.
-
----
-
-## Các chế độ sử dụng
-
-### 1. Ứng dụng khay hệ thống độc lập (Steam, Epic Games, EA, Game Pass, v.v.)
-
-- Chạy **`ApexSenseBridgeTray.exe`** (có thể bật tùy chọn khởi động cùng Windows).
-- Ứng dụng chạy gọn nhẹ trong khay hệ thống với giao diện đậm chất máy console.
-- **Tự động nhận diện:** Tự động mở và đóng cầu nối DualSense cho hơn 220 tựa game.
-- **Tự học file thực thi (.exe):** Tự động phát hiện các file thực thi của game đã qua mod, đổi tên hoặc chạy qua launcher trung gian sau 30 giây chơi ổn định.
-- **Tùy chỉnh riêng cho từng game:** Chỉ định cấu hình lực cò, gán khe cắm phần cứng APEX 5 (1–4) theo từng tựa game cụ thể.
-
-### 2. Tích hợp với Playnite
-
-- Hoạt động liền mạch ở cả chế độ Desktop và Fullscreen (Big Picture) của Playnite.
-- Khi khởi động game từ Playnite, tiện ích sẽ tự động ẩn tay cầm gốc và kích hoạt DualSense ảo.
-- Nhấp chuột phải vào game trong Playnite > chọn **ApexSenseBridge** để điều chỉnh độ nhạy cò, cử chỉ touchpad, khe cấu hình hoặc độ khuếch đại rung.
+1. Download **`ApexSenseBridge-Portable.zip`**.
+2. Extract the archive anywhere on your PC.
+3. Run `Install-Drivers.cmd` as Administrator once to install the required kernel drivers, then restart Windows.
+4. Launch `Start-ApexSenseBridge.cmd` or `ApexSenseBridgeTray.exe`.
 
 ---
 
-## Cài đặt ứng dụng & Khôi phục kết nối
+The portable package is intended for standalone use. Choose the installer for
+automatic Playnite registration, Start-menu shortcuts and Windows uninstallation.
 
-### Điều khiển cảm giác tay cầm theo từng Model
+### Your First Session
 
-Trong mục Cài đặt (Settings), bạn có thể tùy chỉnh:
-- **Lực cản của cò (Trigger Strength):** 0–100%.
-- **Độ mạnh rung báng cầm (Grip Vibration):** 0–200% trên APEX 4/5 (0–100% trên APEX 6 Pro).
-- **Ngưỡng rung âm thanh (Audio-Haptic Threshold):** 0–95%.
-- **Độ nhạy con quay hồi chuyển (APEX 4 Gyro):** 25–400% kèm thanh trượt bù lệch trục ngang (Yaw).
-- Các tùy chọn này được lưu độc lập cho từng dòng tay cầm (APEX 4, 5, 6 riêng biệt) và chỉ áp dụng khi phần cứng tương ứng được kết nối.
+1. Open **`ApexSenseBridgeTray.exe`**, the main app for games, settings and diagnostics.
+2. Connect one supported controller and wait for its verified model to appear.
+3. Launch a supported game. Tray starts the bridge automatically and displays its status; closing the game ends the session.
+4. If the game only detects controllers at startup, close it, enable **Force continuous activation**, wait for **Bridge active**, then launch it again. Turn continuous activation off when finished.
 
-### Tự động khôi phục khi mất kết nối (Disconnection Recovery)
-
-Nếu tay cầm bị hết pin, ngắt dây hoặc rơi vào trạng thái ngủ trong lúc đang chơi game:
-- Ứng dụng sẽ tạm dừng kích hoạt để bảo vệ game và hiển thị thông báo khôi phục trên trang chủ.
-- Khi bạn cắm lại tay cầm, chỉ cần bấm **Khôi phục cầu nối (Resume bridge)**. Game sẽ tiếp tục nhận tín hiệu bình thường mà bạn không cần phải tắt game đi mở lại.
+`ApexSenseBridge.exe` is the engine and CLI diagnostic tool. Opening it without
+a command also opens the Tray app.
 
 ---
 
-## Phím tắt thao tác Touchpad
+## Usage Modes
 
-Đối với các game đòi hỏi thao tác vuốt hoặc nhấn bàn cảm ứng (Touchpad) của DualSense, ApexSenseBridge chuyển đổi qua các tổ hợp phím sau:
+### 1. Standalone System Tray App (Steam, Epic, EA, Game Pass, etc.)
 
-| Tựa game | Thao tác trên tay cầm | Tín hiệu Touchpad DualSense ảo |
+- Launch **`ApexSenseBridgeTray.exe`** (or enable *Launch at Windows startup*).
+- Sits silently in the System Tray with a modern console-style interface.
+- **Automatic Detection:** Launches and closes the DualSense bridge automatically when any of the 215+ supported games start.
+- **Dynamic Executable Learning:** Detects renamed, modded, elevated or multi-process game executables after 30 seconds of a stable automatically detected session while filtering out game launchers (Steam, Epic, EA, Ubisoft). Force Continuous Activation alone cannot identify which game should own an executable.
+- **Dashboard & Per-Game Profiles:** Right-click the Tray icon to open the game list, force a specific profile, or assign a dedicated APEX 5 hardware slot (1–4) for each game.
+
+### 2. Playnite Integration
+
+- Seamlessly integrated with Playnite Desktop and Fullscreen modes.
+- Game launches automatically initiate the bridge, isolate the physical pad, and apply profile mappings.
+- Right-click any game in Playnite > **ApexSenseBridge** to customize trigger remapping, touchpad gesture profiles, onboard APEX 5 hardware slots, or 0–200% grip rumble gain.
+- Do not run the Tray and Playnite automation for the same game. ApexSenseBridge protects the active session from being killed, but selecting one owner avoids duplicate notifications and ambiguous start/stop events.
+
+---
+
+## App Settings & Recovery
+
+### Main App & Navigation
+
+Open **ApexSenseBridgeTray.exe**, the main application (console interface, system tray, games,
+controller settings and diagnostics). **ApexSenseBridge.exe** is the engine;
+opening it without a command now opens the Tray application. Named commands
+remain available for command-line diagnostics.
+
+The Tray application features a modern console interface with full
+gamepad navigation (D-pad/analog sticks, Cross/A, Circle/B, Options/Menu, bumpers/triggers)
+and keyboard navigation (arrows, Enter, Escape, Ctrl+Tab, Ctrl+F). It automatically
+detects the Windows display language among 9 supported localizations (English, French,
+Spanish, Simplified Chinese, Russian, Korean, Vietnamese, Japanese, Brazilian Portuguese),
+with on-the-fly switching via the language picker.
+
+Each game has an optional executable selector in its details. A configured full
+path takes priority over learned paths and catalogue detection; learned executables
+are offered in that selector too. Leaving it empty preserves automatic detection.
+The home screen features a curated shelf of newly added games with "New" badges
+(for titles added within the last 30 days). The diagnostic panel contains the
+prepared `.exe` launch tool, which waits for bridge readiness before starting the game.
+Its manual session can be stopped from the home toggle or tray.
+
+### Controller Feel & Per-Model Settings
+
+The home page shows session phase, owner (Tray or Playnite), game, controller,
+profile and refusal/stop reason. Per-model controller-feel settings live in Tray
+preferences: trigger strength (0–100%), grip vibration strength (0–200% on
+APEX 4/5, 0–100% on APEX 6) and audio-haptic threshold (0–95%). They apply on
+the next Tray session; 100% preserves original strength and 0% mutes the effect.
+Standard rumble is not gated by the audio threshold.
+On APEX 4/5, values above 100% amplify existing rumble and audio-derived grip
+vibrations, saturating at the existing 255 motor-command limit. Gain does not
+restore audio removed by the threshold or alter trigger resistance, timing or
+frequency. Start with a modest increase; Space Station's saved motor intensity
+still influences the result. Playnite exposes the same grip-strength setting;
+the engine caps its common strength at 100% after verifying an APEX 6 identity.
+Connect a single supported controller and wait for its verified identity before
+editing hardware settings. Controls lock on disconnect, failed identification
+or ambiguous detection. APEX 4, APEX 5 and APEX 6 profiles are saved separately
+in the settings file; the engine selects the matching profile after
+verifying the actual hardware, not from the last model displayed in the UI.
+Gyro tuning is APEX 4-only (25–400% sensitivity and separate yaw correction);
+for APEX 4 gyro to work, the gyro must be enabled in the active Flydigi Space
+Station profile (Gyro tab). RGB is APEX 5-only, and the APEX 6 haptic
+threshold is fixed at 0. General Tray preferences remain editable without a
+controller. Existing strength/rumble preferences migrate without being reset;
+subsequent edits affect only the selected model. Playnite keeps its independent
+settings.
+
+### Disconnection Recovery
+
+After a confirmed runtime disconnection, Tray pauses automatic activation for
+the interrupted session. The home page offers a voluntary **Resume bridge**
+action and shows real controller, virtual-device, isolation and runtime checks.
+Recovery retains the game/profile/APEX slot and never closes or relaunches the
+game. A game that cannot reacquire the recreated DualSense must be restarted.
+Playnite-owned sessions show guidance to resume from Playnite; Tray does not
+take over. Dismissing the notice keeps detection paused for that game until it
+closes; a fresh manual activation can also clear the pause.
+
+For APEX 6 Pro audio configuration and model-specific limits, see
+[APEX 6 setup and validation](APEX6_DUALSENSE_VALIDATION.md). Its voice-coil
+trigger effects reproduce vibration rather than DualSense mechanical resistance.
+
+---
+
+## Touchpad Shortcuts
+
+For games that use DualSense touchpad regions or swipes, ApexSenseBridge translates physical controller shortcuts:
+
+| Game Profile | Controller Action | Virtual DualSense Touch Output |
 |---|---|---|
-| **Spider-Man 2** | Giữ nút `View` / Giữ `D-pad Lên` | Vuốt sang Trái (App FNSM) / Vuốt Lên/Xuống (Mở Máy ảnh) |
-| **Miles Morales** | Giữ nút `View` | Vuốt sang Trái (Mở App FNSM) |
-| **Ghost of Tsushima** | Giữ `D-pad Phải` + Gạt cần Analog Phải | Vuốt hướng Gió dẫn đường theo chiều gạt cần |
-| **Warframe** | Giữ `RB` + Bấm `A / B / X / Y` | Vuốt dùng Chiêu thức 1, 2, 3, 4 (Lên / Xuống / Trái / Phải) |
-| **Death Stranding 2** | Bấm hoặc giữ `View/Back` / Tổ hợp `LB + Menu` | Bấm/Giữ bên Phải (Thả tim, Giao tiếp) / Bấm bên Trái (Chế độ chụp ảnh) |
-| **Game DualSense chung** | Bấm nút `View` | Nhấn Touchpad thông thường (Click) |
+| **Spider-Man 2** | Hold `View` / Hold `D-pad Up` | Swipe Left (FNSM App) / Swipe Up/Down (Camera) |
+| **Miles Morales** | Hold `View` | Swipe Left (FNSM App) |
+| **Ghost of Tsushima** | Hold `D-pad Right` + Flick Right Stick | Directional Wind Swipe in flick direction |
+| **Warframe** | Hold `RB` + Press `A/B/X/Y` | Ability Swipes (Up / Down / Left / Right) |
+| **Death Stranding 2** | Press/hold `View/Back` / `LB + Menu` | Right-side Click/Hold (Likes, Communication, Like Icon) / Left-side Click (Photo Mode) |
+| **Standard DualSense** | Press `View` | Touchpad Click (no directional swipe) |
 
-> [!NOTE]
-> Bốn nút lưng M1–M4 không nằm trong gói dữ liệu chuẩn của DualSense. Bạn có thể dùng phần mềm Flydigi Space Station để gán M1–M4 thành các nút tay cầm tiêu chuẩn hoặc phím bàn phím tùy ý.
+Death Stranding 2 uses the default Xbox layout: `View/Back` is forwarded without
+an artificial hold delay, and the Photo Mode chord is consumed until both
+buttons are released. `LB` and `Menu` alone retain their ordinary actions.
+The left-side Photo Mode gesture is documented in the
+[PlayStation guide](https://www.playstation.com/en-id/games/death-stranding-2-on-the-beach/death-stranding-2-on-the-beach-guide/);
+the Xbox `LB + Menu` shortcut is corroborated by
+[players on Steam](https://steamcommunity.com/app/3280350/discussions/1/809097865497552734/).
+
+Rear buttons M1–M4 are not independent controls in a standard DualSense input
+report. Assign them to standard controller buttons or keyboard/mouse inputs in
+Flydigi Space Station; ApexSenseBridge keeps the verified mapping service
+authorized through HidHide during an active session.
 
 ---
 
-## Bảo mật, Chữ ký số & Tự động phục hồi
+## Security, Signing & Crash Recovery
 
-- **Chữ ký số Authenticode:** Toàn bộ file thực thi chính thức đều được ký số xác thực nguồn gốc an toàn.
-- **Cơ chế Watchdog bảo vệ:** Nếu game bị crash đột ngột hoặc máy tính bị mất điện, hệ thống sẽ tự động mở lại khả năng nhìn thấy của tay cầm gốc thông qua registry RunOnce.
-- **Khôi phục thủ công khi cần:** Nếu tay cầm bị ẩn trong hệ thống và bạn muốn hiện lại ngay lập tức, hãy chạy lệnh sau trong PowerShell/CMD:
+- **Authenticode Signed:** All executables (`ApexSenseBridge.exe`, `ApexSenseBridgeTray.exe`, `ApexSenseBridgeControl.exe`, `viiper.exe`, `libVIIPER.dll`, installer) are signed in official release packages. Signing does not guarantee the absence of Windows SmartScreen prompts.
+- **Auto-Recovery Watchdog & RunOnce:** If a game crashes or power is lost, controller visibility and original APEX onboard profiles are automatically restored via an armed watchdog and HKCU RunOnce registry protection.
+- **Manual Visibility Restoration:** Should you ever need to manually unhide your controller, open the Control Panel or run:
   ```powershell
   ApexSenseBridge.exe restore-controller-visibility
   ```
 
 ---
 
-## Lệnh chuẩn đoán (CLI)
-
-Bạn có thể chạy các lệnh này qua Command Prompt hoặc PowerShell để kiểm tra trạng thái phần cứng:
+## Diagnostics & CLI
 
 ```text
-ApexSenseBridge.exe list                              # Liệt kê các tay cầm đang kết nối
-ApexSenseBridge.exe diagnose [--all-hid] [--json]     # Chuẩn đoán xung đột phần mềm (HidHide, DSX, v.v.)
-ApexSenseBridge.exe identify [vị_trí]                 # Nhận dạng chính xác model tay cầm
-ApexSenseBridge.exe input-status [vị_trí]             # Xem dữ liệu nút bấm và cần gạt theo thời gian thực
-ApexSenseBridge.exe test-rt [vị_trí]                  # Kiểm tra lực cản cò phải (RT)
-ApexSenseBridge.exe test-trigger [vị_trí]             # Kiểm tra cò thích ứng (LT, RT hoặc cả hai)
-ApexSenseBridge.exe test-rumble [vị_trí]              # Kiểm tra mô-tơ rung báng cầm
-ApexSenseBridge.exe restore-controller-visibility     # Hiện lại tay cầm gốc trong Windows
+ApexSenseBridge.exe list
+ApexSenseBridge.exe diagnose [--all-hid] [--json]
+ApexSenseBridge.exe identify [index]
+ApexSenseBridge.exe input-status [index] [--seconds N] [--json]
+ApexSenseBridge.exe test-rt [index]
+ApexSenseBridge.exe test-trigger [index] [--side lt|rt|both] [--seconds N]
+ApexSenseBridge.exe test-rumble [index] [--left 0..255] [--right 0..255] [--seconds N]
+ApexSenseBridge.exe restore-controller-visibility
 ```
 
 ---
 
-## Biên dịch từ mã nguồn
+## Building from Source
 
-### Yêu cầu môi trường
+### Build Requirements
 
-- Windows 10 / 11 64-bit
-- Visual Studio 2022 / 2026 Build Tools (Desktop C++ & Windows SDK)
-- MSBuild và .NET Framework 4.6.2 Developer Pack
-- CMake 3.25 trở lên
-- Inno Setup 6 (để đóng gói bộ cài đặt)
+- Windows 10 / 11 x64
+- Visual Studio 2022 or 2026 Build Tools (Desktop C++ & Windows SDK)
+- MSBuild and .NET Framework 4.6.2 targeting tools for Tray and Playnite
+- CMake 3.25+
+- Inno Setup 6 (for packaging)
 
 ```powershell
-# 1. Biên dịch native engine và chạy bài kiểm thử
+# 1. Build native engine and tests
 .\scripts\build-windows.ps1
 ctest --test-dir .\build-win -C Release --output-on-failure
 
-# 2. Biên dịch Tray App và kiểm tra tính nhất quán phiên bản
-.\scripts\build-tray-app.ps1
-.\scripts\verify-version-consistency.ps1
-
-# 3. Đóng gói bộ cài đặt và bản portable
+# 2. Build VIIPER backend and installer
+.\scripts\build-libviiper-windows.ps1
 .\scripts\build-installer.ps1
+.\scripts\verify-version-consistency.ps1 -CheckArtifacts
 ```
+
+There is one canonical local Tray executable:
+`build-win\Release\ApexSenseBridgeTray.exe`. Files below `obj` are compiler
+intermediates and must not be launched; the Tray build removes its intermediate
+executable automatically. The repository root never contains runnable copies,
+and `dist` is reserved for packaged release artifacts. The portable build
+removes its expanded staging directory after creating the ZIP.
+
+Before publishing a tag, follow the clean-VM matrix in
+[`RELEASE_CHECKLIST.md`](RELEASE_CHECKLIST.md). The release workflow rejects a
+tag/version mismatch, a stale package, a bad checksum or an unsigned payload.
 
 ---
 
-## Giấy phép & Ghi nhận bản quyền
+## License & Third-Party Notices
 
-- Phát hành theo Giấy phép **MIT License**. Xem chi tiết tại [LICENSE](LICENSE).
-- Sử dụng các thành phần mã nguồn mở được vá tối ưu từ VIIPER, usbip-win2 và HidHide. Xem chi tiết tại [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
+- Distributed under the MIT License. See [LICENSE](LICENSE) for details.
+- Uses patched components from VIIPER, usbip-win2, and HidHide. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
